@@ -201,24 +201,21 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
 </section>
 
 <section id="method" class="wrap">
-  <div class="shead"><h2>Method</h2><span class="ref">paper §3 · Fig. 2</span></div>
+  <div class="shead"><h2>Method</h2><span class="ref">paper §3 · Figs. 2–3</span></div>
   <figure class="figure lightfig slot" style="margin:0">
-    <span class="slot-tag">static · animation in progress</span>
+    <span class="slot-tag">static · one animation in progress</span>
     <img src="static/images/method_static.jpg" alt="DyRAD overview: recorded RAD tensors, poses, object boxes and the radar processing chain initialize a learned scene of reflectors and object tracks; a RAD renderer with a fixed sensor model produces predictions and novel views, with gradients flowing back from the loss." loading="lazy">
   </figure>
   <ol class="steps">
-    <li><b>Initialize</b>Radar returns and object boxes seed static background reflectors and per-object dynamic reflectors.</li>
-    <li><b>Move</b>Each object follows a rigid track through learned track points, one per training frame.</li>
-    <li><b>Render</b>Reflectors are projected to range, azimuth and Doppler and spread by the radar's fixed analytic PSF.</li>
-    <li><b>Fit</b>An L2 loss over every RAD bin plus an interpolation-consistency term, <span style="font-family:var(--f-mono)">𝓛 = 𝓛<sub>rec</sub> + λ<sub>int</sub>𝓛<sub>int</sub></span>.</li>
+    <li><b>Input</b>Recorded RAD tensors, sensor poses, object bounding boxes, and the radar's processing chain.</li>
+    <li><b>Scene initialization</b>Point reflectors are seeded from the measurements, the boxes split them into background and objects and start each object's track, and the processing chain fixes the sensor PSF.</li>
+    <li><b>Optimization</b>The differentiable RAD renderer lets reflectors and tracks be fit jointly to the recorded measurements, with <span style="font-family:var(--f-mono)">𝓛 = 𝓛<sub>rec</sub> + λ<sub>int</sub>𝓛<sub>int</sub></span>.</li>
+    <li><b>Novel views</b>The optimized scene renders RAD tensors at new times, sensor poses and configurations.</li>
   </ol>
-</section>
-
-<section id="motion" class="wrap">
-  <div class="shead"><h2>Motion model</h2><span class="ref">paper §3.1 · Fig. 3</span></div>
-  <div class="split">
+  <div class="split" style="margin-top:40px">
     <div class="prose">
-      <p class="lead">Each moving object is a planar rigid track. Object <i>j</i> has one learned track point
+      <h3 style="font-size:1.2rem;margin-bottom:.6em">Motion model</h3>
+      <p>Each moving object is a planar rigid track. Object <i>j</i> has one learned track point
       <i>c</i><sub>j,k</sub> per training timestamp, and its reflectors keep fixed coordinates
       <i>μ</i><sub>i</sub> in the object's own frame.</p>
       <div class="eq">x<sub>i</sub>(t) = p<sub>j</sub>(t) + R<sub>j</sub>(t) μ<sub>i</sub>&nbsp;&nbsp;<i>for reflector i on object j</i></div>
@@ -226,8 +223,7 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
       projected onto the line of sight to give each reflector's Doppler. Doppler is therefore both a rendered
       output and supervision for the track.</p>
     </div>
-    <figure class="figure lightfig slot" style="margin:0">
-      <span class="slot-tag">static · animation in progress</span>
+    <figure class="figure lightfig" style="margin:0">
       <img src="static/images/motion_static.png" alt="Motion model of object j between track points c_k and c_k+1: reflectors inside the annotation box move with the track, and the velocity is the least-squares slope over four neighbouring track points." loading="lazy">
     </figure>
   </div>
@@ -258,30 +254,17 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
   ego-motion model.</p>
 </section>
 
-<section id="edit" class="wrap">
-  <div class="shead"><h2>Scene editing and sensor transfer</h2><span class="ref">paper Fig. 1 · Fig. 10</span></div>
-  <div class="pair">
-    <figure class="edit" style="margin:0">
-      <h3>Repositioned object</h3>
-      <div class="figure lightfig slot"><span class="slot-tag">clip coming</span>
-        <img src="static/images/edit_panel.png" alt="RA and Doppler render after moving one vehicle to a new position in the reconstructed scene." loading="lazy"></div>
-      <figcaption>Moving a vehicle's track moves its returns, in range, azimuth and Doppler, with no refitting.</figcaption>
-    </figure>
-    <figure class="cfg" style="margin:0">
-      <h3>Higher-resolution sensor</h3>
-      <div class="figure lightfig slot"><span class="slot-tag">clip coming</span>
-        <img src="static/images/highres_panel.png" alt="The same reconstructed scene rendered for a higher-resolution radar." loading="lazy"></div>
-      <figcaption>Because the PSF is fixed and separate from the scene, a scene fit at one configuration renders at another.</figcaption>
-    </figure>
-  </div>
-  <figure class="figure lightfig" style="margin:22px 0 0">
+<section id="transfer" class="wrap">
+  <div class="shead"><h2>Sensor-configuration transfer</h2><span class="ref">paper §4.3 · Fig. 10 · Table 16</span></div>
+  <figure class="figure lightfig" style="margin:0">
     <img src="static/images/sensor_transfer.jpg" alt="Measured native RA projection, the coarse-trained scene rendered directly at native resolution, and linear upsampling of the coarse render, with enlarged insets." loading="lazy">
   </figure>
-  <figcaption><b>Coarse-to-fine transfer.</b> Measured native RA (left), the coarse-trained scene rendered
-  directly with the native PSF and grid (middle), and linear upsampling of its coarse render (right).
-  Direct rendering keeps separate vehicle returns that upsampling blurs together: detection hit rate
-  0.960 against 0.906 and Chamfer distance 3.20 m against 7.27 m, while upsampling scores higher on
-  full-frame correlation (paper Table 16).</figcaption>
+  <figcaption>Because the PSF is fixed and kept out of the scene, a scene fit at a coarse configuration
+  renders directly at a finer one without refitting. <b>Left:</b> measured native RA.
+  <b>Middle:</b> the coarse-trained scene rendered with the native PSF and grid. <b>Right:</b> linear
+  upsampling of its coarse render. Direct rendering keeps separate vehicle returns that upsampling blurs
+  together: detection hit rate 0.960 against 0.906 and Chamfer distance 3.20 m against 7.27 m, while
+  upsampling scores higher on full-frame correlation (paper Table 16).</figcaption>
 </section>
 
 <section id="quant" class="wrap">
