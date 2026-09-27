@@ -22,6 +22,7 @@ PURP, PURP_F = "#6a2a8c", "#e6d8f0"
 CRIM, CRIM_F = "#8f1d3a", "#f4c3cd"
 GRN, GRN_F = "#3c8a32", "#d3ecca"
 GREY, RED = "#7a7a7a", "#cc1f2f"
+MT_TRACK = [(60, 215), (160, 178), (262, 214), (362, 160), (470, 192), (566, 238), (664, 190), (742, 150)]
 
 
 def box(x, y, w, h, stroke, fill, title, hh=26, cls=""):
@@ -73,15 +74,17 @@ def objects():
 
 
 def motion_callout():
-    # slide 3 geometry, in the 792 x 540 px space of the paper's Fig. 3 crop
-    K = [(78, 180), (168, 210), (265, 188), (485, 207), (618, 172), (711, 186)]
+    # slide 3 layout, in the 792 x 540 px space of the paper's Fig. 3 crop; the track is made curvier
+    # than the slide's so the rotation reads. The script in index.html walks the box along it and
+    # must use the same points (MT_TRACK).
+    K = MT_TRACK
     poly = " ".join(f"{x},{y}" for x, y in K)
-    knots = "".join(f'<circle cx="{x}" cy="{y}" r="{11 if i in (0, 5) else 9}" fill="#2a74e0"/>' for i, (x, y) in enumerate(K))
-    rings = "".join(f'<circle class="ring" cx="{x}" cy="{y}" r="15" fill="none" stroke="#111" stroke-width="4" stroke-dasharray="7 6"/>' for x, y in K[1:5])
-    labels = [("c", "j,k−1", 128, 170), ("c", "j,k", 232, 148), ("c", "j,k+1", 462, 168), ("c", "j,k+2", 586, 136)]
-    lab = "".join(f'<text x="{x}" y="{y}" class="mlab"><tspan font-style="italic">{a}</tspan><tspan dy="7" font-size="20" font-style="italic">{b}</tspan></text>' for a, b, x, y in labels)
-    refl = [(-44, -24), (-12, -16), (6, 14), (-40, 18), (30, 26), (-22, 6)]
-    rdots = "".join(f'<circle cx="{x}" cy="{y}" r="6" fill="#e3122f"/>' for x, y in refl)
+    knots = "".join(f'<circle cx="{x}" cy="{y}" r="9" fill="#2a74e0"/>' for x, y in K)
+    rings = "".join(f'<circle id="mt-r{i}" cx="{K[i + 1][0]}" cy="{K[i + 1][1]}" r="15" fill="none" stroke="#111" stroke-width="4" stroke-dasharray="7 6"/>' for i in range(4))
+    names = ["j,k−1", "j,k", "j,k+1", "j,k+2"]
+    lab = "".join(f'<text id="mt-l{i}" x="{K[i + 1][0] - 24}" y="{K[i + 1][1] - 44}" class="mlab"><tspan font-style="italic">c</tspan><tspan dy="7" font-size="20" font-style="italic">{n}</tspan></text>' for i, n in enumerate(names))
+    refl = [(-36, -19), (-10, -13), (5, 11), (-32, 14), (24, 20), (-18, 5)]
+    rdots = "".join(f'<circle cx="{x}" cy="{y}" r="5.5" fill="#e3122f"/>' for x, y in refl)
     leg_y = 330
     legend = f'''
       <rect x="12" y="{leg_y - 22}" width="768" height="210" rx="10" fill="#f0f1f3"/>
@@ -100,11 +103,12 @@ def motion_callout():
     <g transform="translate(662 58) scale(.555)">
       <text x="396" y="20" text-anchor="middle" class="mtitle">Motion model of object <tspan font-style="italic">j</tspan> at time <tspan font-style="italic">t</tspan> ∈ [<tspan font-style="italic">t</tspan><tspan dy="7" font-size="20" font-style="italic">k</tspan><tspan dy="-7">, </tspan><tspan font-style="italic">t</tspan><tspan dy="7" font-size="20" font-style="italic">k+1</tspan><tspan dy="-7">]</tspan></text>
       <polyline points="{poly}" fill="none" stroke="#8a8a8a" stroke-width="5"/>
+      <g id="mt-trail"></g>
       {rings}{knots}{lab}
       <g id="mt-body">
-        <rect x="-66" y="-40" width="132" height="80" fill="none" stroke="#1b2130" stroke-width="3.5"/>
+        <rect x="-54" y="-33" width="108" height="66" fill="none" stroke="#1b2130" stroke-width="3.5"/>
         {rdots}
-        <line id="mt-mu" x1="0" y1="0" x2="-40" y2="18" stroke="#7a3fb6" stroke-width="3" marker-end="url(#mt-ahm)"/>
+        <line id="mt-mu" x1="0" y1="0" x2="-32" y2="14" stroke="#7a3fb6" stroke-width="3" marker-end="url(#mt-ahm)"/>
       </g>
       <line id="mt-vel" x1="0" y1="0" x2="0" y2="0" stroke="#2f9a3c" stroke-width="6" marker-end="url(#mt-ahv)"/>
       <circle id="mt-p" r="10" fill="#8a8a8a"/>
