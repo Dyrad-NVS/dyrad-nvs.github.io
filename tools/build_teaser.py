@@ -19,16 +19,19 @@ PANELS = [  # key, title, colour token, frame x, frame y
 
 
 def panel(key, title, tok, x, y):
-    ix, iy, iw, ih, dw = x + 20, y + 23, 152, 111, 19
+    # image placement and type sizes from slide 2: the graphic spans 181 x 115 units at (x+17, y+23),
+    # titles are 14 pt bold and axis labels 9 pt Helvetica (1 pt = 1.04 units, panel groups scale ~1.06)
+    k = 1.06
+    ix, iy, iw, ih, gap, dw = x + 17.7, y + 23.8, 146.9 * k, 107.3 * k, 3.6 * k, 18.9 * k
     return f'''
   <g class="panel p-{key}" style="--c:var({tok})">
     <rect x="{x}" y="{y}" width="214" height="154" rx="6" fill="#fff" stroke="var(--c)" stroke-width="1.8"/>
-    <text x="{x + 8}" y="{y + 15}" class="ptitle" fill="var(--c)">{title}</text>
-    <image href="{IMG}ra_{key}.jpg" x="{ix}" y="{iy}" width="{iw}" height="{ih}" preserveAspectRatio="none"/>
-    <image href="{IMG}d_{key}.jpg" x="{ix + iw + 3}" y="{iy}" width="{dw}" height="{ih}" preserveAspectRatio="none"/>
-    <text class="ax" transform="translate({x + 14} {iy + ih / 2}) rotate(-90)" text-anchor="middle">Range [m]</text>
-    <text class="ax" x="{ix + iw / 2}" y="{iy + ih + 11}" text-anchor="middle">Azimuth°</text>
-    <text class="ax" x="{ix + iw + 3 + dw / 2}" y="{iy + ih + 11}" text-anchor="middle">Doppler</text>
+    <text x="{x + 6}" y="{y + 17}" class="ptitle" fill="var(--c)">{title}</text>
+    <image href="{IMG}ra_{key}.jpg" x="{ix:.1f}" y="{iy:.1f}" width="{iw:.1f}" height="{ih:.1f}" preserveAspectRatio="none"/>
+    <image href="{IMG}d_{key}.jpg" x="{ix + iw + gap:.1f}" y="{iy:.1f}" width="{dw:.1f}" height="{ih:.1f}" preserveAspectRatio="none"/>
+    <text class="ax" transform="translate({x + 12} {iy + ih / 2:.1f}) rotate(-90)" text-anchor="middle">Range [m]</text>
+    <text class="ax" x="{ix + iw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Azimuth°</text>
+    <text class="ax" x="{ix + iw + gap + dw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Doppler</text>
   </g>'''
 
 
@@ -98,9 +101,8 @@ def svg():
     return f'''<svg class="tz-svg" viewBox="20 92 900 336" role="img" aria-labelledby="tz-title">
   <title id="tz-title">DyRAD re-simulation: from a measured radar frame, DyRAD renders a laterally shifted sensor, a repositioned object and a higher-resolution sensor, and scores higher RAD PSNR and detection hit rate than RadarSplat and RadarFields.</title>
   <defs></defs>
-  {''.join(panel(*p) for p in PANELS[:2])}
   {road()}
-  {''.join(panel(*p) for p in PANELS[2:])}
+  {''.join(panel(*p) for p in PANELS)}
   {plot()}
 </svg>'''
 
