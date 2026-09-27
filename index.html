@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DyRAD</title>
+<meta name="description" content="DyRAD reconstructs dynamic driving scenes from recorded radar and renders full range–azimuth–Doppler tensors at new viewpoints, sensor configurations and scene edits.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Palette taken from the paper's own figures: DyRAD crimson, RadarSplat violet, RadarFields sky,
+   novel-view teal, sensor-config green, and the magma radar imagery (dark panels). */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#191c24; --dim:#5a6070; --line:#dfe2e8;
+  --dyrad:#c8234a; --dyrad-soft:#fbe9ee; --rs:#a55cc9; --rf:#4fa3c7; --nv:#2f8499; --cfg:#3d8a37;
+  --panel:#0d0a14; --code:#eef0f4;
+  --shadow:0 1px 2px rgba(20,24,36,.05),0 6px 20px rgba(20,24,36,.06);
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f1117; --surface:#171a22; --ink:#e7e9ee; --dim:#9aa1b1; --line:#2a2f3b;
+    --dyrad:#ef5b7e; --dyrad-soft:#3a1a24; --rs:#c58be3; --rf:#7cc3e2; --nv:#5fb6cb; --cfg:#74c06c;
+    --panel:#07050c; --code:#1d212b;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1117; --surface:#171a22; --ink:#e7e9ee; --dim:#9aa1b1; --line:#2a2f3b;
+  --dyrad:#ef5b7e; --dyrad-soft:#3a1a24; --rs:#c58be3; --rf:#7cc3e2; --nv:#5fb6cb; --cfg:#74c06c;
+  --panel:#07050c; --code:#1d212b;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 var(--f-body);
+  -webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+a{color:var(--dyrad)}
+:focus-visible{outline:2px solid var(--dyrad);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px}
+.wide{max-width:1400px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--f-display);font-stretch:112%;text-wrap:balance;margin:0}
+
+/* hero */
+.hero{padding-block:72px 36px;text-align:center}
+.hero h1{font-size:clamp(2.6rem,7vw,4.4rem);font-weight:800;letter-spacing:-.01em;line-height:1}
+.hero h1 .d{color:var(--dyrad)}
+.hero .sub{font-family:var(--f-display);font-stretch:112%;font-weight:600;
+  font-size:clamp(1.15rem,2.6vw,1.6rem);margin:14px auto 0;max-width:760px;line-height:1.25}
+.authors{margin-top:22px;color:var(--dim);font-size:1rem}
+.authors b{color:var(--ink);font-weight:600}
+.venue{display:inline-block;margin-top:10px;font:500 .78rem var(--f-mono);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+.links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:999px;
+  background:var(--ink);color:var(--bg);font-weight:600;font-size:.95rem;text-decoration:none;border:0}
+.btn svg{width:16px;height:16px;fill:currentColor}
+.btn[aria-disabled="true"]{background:transparent;color:var(--dim);border:1px dashed var(--line);cursor:default}
+.btn[aria-disabled="true"] small{font:400 .72rem var(--f-mono);letter-spacing:.03em}
+
+/* figures */
+.figure{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.figure img{margin:0 auto;border-radius:6px}
+.lightfig{background:#fff}             /* the paper figures are drawn on white */
+.slot{position:relative}
+.slot-tag{position:absolute;top:12px;right:12px;font:500 .7rem var(--f-mono);letter-spacing:.05em;
+  text-transform:uppercase;background:var(--dyrad);color:#fff;padding:3px 9px;border-radius:999px}
+.tldr{max-width:820px;margin:26px auto 0;text-align:center;font-size:1.15rem;line-height:1.5}
+.tldr b{color:var(--dyrad)}
+.caps{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin-top:14px;font-size:.92rem;color:var(--dim)}
+.caps span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;background:var(--c)}
+
+/* sections */
+section{padding-block:56px}
+section + section{border-top:1px solid var(--line)}
+.shead{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.shead h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:800}
+.ref{font:500 .78rem var(--f-mono);color:var(--dim);letter-spacing:.03em}
+.prose{max-width:68ch}
+.prose p{margin:0 0 1em}
+.lead{font-size:1.08rem}
+figcaption{color:var(--dim);font-size:.93rem;margin-top:12px;max-width:90ch}
+figcaption b{color:var(--ink)}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+.eq{font:1.05rem var(--f-mono);background:var(--code);border-radius:10px;padding:14px 16px;overflow-x:auto;white-space:nowrap}
+.eq i{font-family:var(--f-body)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.93rem}
+.steps li::before{content:counter(s);display:block;font:600 .75rem var(--f-mono);color:var(--dyrad);margin-bottom:4px}
+.steps b{display:block;font-family:var(--f-display);font-stretch:112%;font-size:1rem;margin-bottom:2px}
+
+/* results viewer */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--dim);
+  font:600 1rem var(--f-body);padding:10px 16px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--dyrad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font:500 .88rem var(--f-body);padding:6px 13px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.player{background:#fbfbfb;border:1px solid var(--line);border-radius:12px;padding:8px;box-shadow:var(--shadow)}
+.player video{width:100%;border-radius:6px;background:#fbfbfb}
+.note{font-size:.9rem;color:var(--dim);margin-top:12px;max-width:95ch}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;margin:4px 0 14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+
+/* tables */
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:9px 12px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;color:var(--dim);font-size:.82rem;border-bottom:1px solid var(--line)}
+thead tr.grp th{color:var(--ink);font-family:var(--f-display);font-stretch:112%;font-size:.86rem;text-align:center;border-bottom:1px solid var(--line)}
+tbody td{border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+td .sd{color:var(--dim);font-size:.78rem;margin-left:3px}
+tr.ours td{background:var(--dyrad-soft);font-weight:600}
+tr.ours td:first-child{color:var(--dyrad)}
+td.sep,th.sep{border-left:1px solid var(--line)}
+
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.pair h3{font-size:1.05rem;margin-bottom:8px}
+.pair .edit h3{color:var(--dyrad)} .pair .cfg h3{color:var(--cfg)}
+
+/* bibtex */
+.bib{position:relative;background:var(--code);border-radius:12px;padding:18px 20px;overflow-x:auto}
+.bib pre{margin:0;font:.86rem/1.6 var(--f-mono)}
+.copy{position:absolute;top:10px;right:10px;appearance:none;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);font:500 .8rem var(--f-body);padding:5px 12px;border-radius:999px;cursor:pointer}
+footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:center;border-top:1px solid var(--line)}
+
+@media (max-width:860px){
+  .split,.pair{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .hero{padding-block:48px 24px}
+}
+@media (max-width:480px){ .steps{grid-template-columns:1fr} .wrap,.wide{padding-inline:16px} }
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+
+<header class="hero wrap">
+  <h1><span class="d">DyRAD</span></h1>
+  <p class="sub">Radar Novel View Synthesis for Dynamic Driving Scenes</p>
+  <div class="authors"><b>Anonymous authors</b> · paper under double-blind review</div>
+  <span class="venue">Under review · ICLR 2027</span>
+  <nav class="links" aria-label="Paper links">
+    <a class="btn" aria-disabled="true"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 3v5h5"/></svg>Paper <small>soon</small></a>
+    <a class="btn" aria-disabled="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>arXiv <small>soon</small></a>
+    <a class="btn" aria-disabled="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1 1.6 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>Code <small>soon</small></a>
+    <a class="btn" href="#bibtex"><svg viewBox="0 0 24 24"><path d="M5 3h14v18l-7-4-7 4z"/></svg>BibTeX</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <figure class="figure lightfig slot" style="margin:0">
+    <span class="slot-tag">static · animation in progress</span>
+    <img src="static/images/teaser_static.jpg" alt="Radar re-simulation with DyRAD: a ground-truth RA/Doppler measurement, and DyRAD renders under a repositioned object, a lateral sensor shift and a higher-resolution sensor, beside a plot of RAD PSNR against detection hit rate for DyRAD, RadarSplat and RadarFields." width="1650" height="605">
+  </figure>
+  <p class="tldr"><b>DyRAD</b> reconstructs a dynamic driving scene from recorded radar and renders full
+    range–azimuth–Doppler tensors from poses, sensors and scene layouts it never recorded.</p>
+  <div class="caps">
+    <span style="--c:var(--nv)">novel viewpoints</span>
+    <span style="--c:var(--cfg)">sensor-configuration changes</span>
+    <span style="--c:var(--dyrad)">scene editing</span>
+  </div>
+</div>
+
+<section id="abstract" class="wrap">
+  <div class="shead"><h2>Abstract</h2></div>
+  <div class="prose">
+    <p>Reconstructing dynamic driving scenes from recorded sensor data supports closed-loop evaluation of
+    autonomous driving systems by synthesizing observations beyond the original trajectory. Unlike cameras
+    and LiDAR, radar measures radial velocity directly through Doppler. Yet existing radar novel-view
+    synthesis fails to exploit this capability: methods addressing dynamic scenes reconstruct only
+    range–azimuth tensors, while methods that render Doppler assume static scenes. Moreover, because radar
+    processing spreads each reflection across multiple bins, existing representations absorb this spread
+    into scene geometry, causing it to render incorrectly when the viewpoint moves.</p>
+    <p>We present DyRAD, which models dynamic driving scenes using static background reflectors and
+    motion-tracked dynamic point reflectors to render complete range–azimuth–Doppler (RAD) tensors.
+    Reflector velocities are derived from object tracks and projected onto the line of sight, making
+    Doppler both a rendered output and supervision for those tracks. Crucially, we render reflectors
+    through a fixed analytic point-spread function (PSF) derived from the radar’s signal-processing chain,
+    preventing sensor-induced spread from being baked into the scene representation. Beyond improving scene
+    reconstruction, this separation also enables zero-shot sensor-configuration transfer, allowing the same
+    reconstructed scene to be rendered under different radar specifications without refitting.</p>
+    <p>We evaluate DyRAD on RADIal, Boreas, and a synthetic benchmark across both on-path poses and
+    displaced viewpoints untested by prior work. On RADIal, DyRAD recovers radar detections in 90.7% of
+    reference-detected objects, compared with 26.9% for the strongest baseline.</p>
+  </div>
+</section>
+
+<section id="method" class="wrap">
+  <div class="shead"><h2>Method</h2><span class="ref">paper §3 · Fig. 2</span></div>
+  <figure class="figure lightfig slot" style="margin:0">
+    <span class="slot-tag">static · animation in progress</span>
+    <img src="static/images/method_static.jpg" alt="DyRAD overview: recorded RAD tensors, poses, object boxes and the radar processing chain initialize a learned scene of reflectors and object tracks; a RAD renderer with a fixed sensor model produces predictions and novel views, with gradients flowing back from the loss." loading="lazy">
+  </figure>
+  <ol class="steps">
+    <li><b>Initialize</b>Radar returns and object boxes seed static background reflectors and per-object dynamic reflectors.</li>
+    <li><b>Move</b>Each object follows a rigid track through learned track points, one per training frame.</li>
+    <li><b>Render</b>Reflectors are projected to range, azimuth and Doppler and spread by the radar's fixed analytic PSF.</li>
+    <li><b>Fit</b>An L2 loss over every RAD bin plus an interpolation-consistency term, <span style="font-family:var(--f-mono)">𝓛 = 𝓛<sub>rec</sub> + λ<sub>int</sub>𝓛<sub>int</sub></span>.</li>
+  </ol>
+</section>
+
+<section id="motion" class="wrap">
+  <div class="shead"><h2>Motion model</h2><span class="ref">paper §3.1 · Fig. 3</span></div>
+  <div class="split">
+    <div class="prose">
+      <p class="lead">Each moving object is a planar rigid track. Object <i>j</i> has one learned track point
+      <i>c</i><sub>j,k</sub> per training timestamp, and its reflectors keep fixed coordinates
+      <i>μ</i><sub>i</sub> in the object's own frame.</p>
+      <div class="eq">x<sub>i</sub>(t) = p<sub>j</sub>(t) + R<sub>j</sub>(t) μ<sub>i</sub>&nbsp;&nbsp;<i>for reflector i on object j</i></div>
+      <p style="margin-top:1em">The velocity comes from a least-squares slope over four neighbouring track points, and is
+      projected onto the line of sight to give each reflector's Doppler. Doppler is therefore both a rendered
+      output and supervision for the track.</p>
+    </div>
+    <figure class="figure lightfig slot" style="margin:0">
+      <span class="slot-tag">static · animation in progress</span>
+      <img src="static/images/motion_static.png" alt="Motion model of object j between track points c_k and c_k+1: reflectors inside the annotation box move with the track, and the velocity is the least-squares slope over four neighbouring track points." loading="lazy">
+    </figure>
+  </div>
+</section>
+
+<section id="results" class="wide">
+  <div class="wrap" style="padding-inline:0">
+    <div class="shead"><h2>Novel views</h2><span class="ref">paper §4.2 · supplementary videos</span></div>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Benchmark">
+    <button class="tab" role="tab" id="tab-synth" aria-selected="true" data-set="synth">Synthetic off-path</button>
+    <button class="tab" role="tab" id="tab-radial" aria-selected="false" data-set="radial">RADIal round trip</button>
+    <button class="tab" role="tab" id="tab-boreas" aria-selected="false" data-set="boreas">Boreas round trip</button>
+  </div>
+  <p class="note" id="set-desc" style="margin:0 0 14px"></p>
+  <div class="chips" id="chips" role="group" aria-label="Clip"></div>
+  <div class="legend">
+    <span style="--c:#555">Ground truth</span><span style="--c:var(--dyrad)">DyRAD</span>
+    <span style="--c:#8a8f9c">DyRAD-static</span><span style="--c:var(--rs)">RadarSplat*</span>
+    <span style="--c:var(--rf)">RadarFields*</span>
+  </div>
+  <div class="player">
+    <video id="vid" muted loop playsinline autoplay preload="metadata" src="static/videos/intersection__latp3_5.mp4"></video>
+  </div>
+  <p class="note">Every clip shows all methods on the same scene at the same instant, on one brightness scale.
+  ρ is the Pearson correlation with the ground truth for that frame. White boxes mark annotated vehicles.
+  * RadarSplat and RadarFields predict only RA measurements; their Doppler is assigned from a static
+  ego-motion model.</p>
+</section>
+
+<section id="edit" class="wrap">
+  <div class="shead"><h2>Scene editing and sensor transfer</h2><span class="ref">paper Fig. 1 · Fig. 10</span></div>
+  <div class="pair">
+    <figure class="edit" style="margin:0">
+      <h3>Repositioned object</h3>
+      <div class="figure lightfig slot"><span class="slot-tag">clip coming</span>
+        <img src="static/images/edit_panel.png" alt="RA and Doppler render after moving one vehicle to a new position in the reconstructed scene." loading="lazy"></div>
+      <figcaption>Moving a vehicle's track moves its returns, in range, azimuth and Doppler, with no refitting.</figcaption>
+    </figure>
+    <figure class="cfg" style="margin:0">
+      <h3>Higher-resolution sensor</h3>
+      <div class="figure lightfig slot"><span class="slot-tag">clip coming</span>
+        <img src="static/images/highres_panel.png" alt="The same reconstructed scene rendered for a higher-resolution radar." loading="lazy"></div>
+      <figcaption>Because the PSF is fixed and separate from the scene, a scene fit at one configuration renders at another.</figcaption>
+    </figure>
+  </div>
+  <figure class="figure lightfig" style="margin:22px 0 0">
+    <img src="static/images/sensor_transfer.jpg" alt="Measured native RA projection, the coarse-trained scene rendered directly at native resolution, and linear upsampling of the coarse render, with enlarged insets." loading="lazy">
+  </figure>
+  <figcaption><b>Coarse-to-fine transfer.</b> Measured native RA (left), the coarse-trained scene rendered
+  directly with the native PSF and grid (middle), and linear upsampling of its coarse render (right).
+  Direct rendering keeps separate vehicle returns that upsampling blurs together: detection hit rate
+  0.960 against 0.906 and Chamfer distance 3.20 m against 7.27 m, while upsampling scores higher on
+  full-frame correlation (paper Table 16).</figcaption>
+</section>
+
+<section id="quant" class="wrap">
+  <div class="shead"><h2>Quantitative results</h2><span class="ref">paper Tables 1–2</span></div>
+  <div class="tabs" role="tablist" aria-label="Evaluation">
+    <button class="tab" role="tab" aria-selected="true" data-tbl="onpath">On-path (held-out frames)</button>
+    <button class="tab" role="tab" aria-selected="false" data-tbl="offpath">Off-path (2 m round trip)</button>
+  </div>
+  <div class="tblwrap">
+    <table>
+      <thead>
+        <tr class="grp"><th></th><th colspan="3">RADIal · RAD reconstruction</th><th colspan="3" class="sep">RADIal · detection</th><th colspan="3" class="sep">Boreas · RA reconstruction</th></tr>
+        <tr><th>Method</th><th>PSNR ↑</th><th>ρ ↑</th><th>ρ<sub>obj</sub> ↑</th><th class="sep">CD [m] ↓</th><th>F1 ↑</th><th>Hit rate ↑</th><th class="sep">PSNR ↑</th><th>ρ ↑</th><th>ρ<sub>obj</sub> ↑</th></tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <p class="note" id="tbl-note"></p>
+</section>
+
+<section id="bibtex" class="wrap">
+  <div class="shead"><h2>BibTeX</h2></div>
+  <div class="bib">
+    <button class="copy" id="copyBib" type="button">Copy</button>
+<pre id="bibText">@inproceedings{dyrad2027,
+  title     = {DyRAD: Radar Novel View Synthesis for Dynamic Driving Scenes},
+  author    = {Anonymous},
+  booktitle = {Under review},
+  year      = {2027}
+}</pre>
+  </div>
+</section>
+
+<footer>DyRAD project page · draft, not public</footer>
+
+<script>
+(function(){
+  // ----- novel-view clips (names match the anonymized labels burned into each clip)
+  var V = "static/videos/";
+  var SETS = {
+    synth: {desc:"Trained on the recorded trajectory of a synthetic scene, evaluated without refitting against ground-truth RAD measurements at displaced poses.",
+      clips:[["recorded trajectory","intersection__base"],["lateral −1.75 m","intersection__latm1_75"],["lateral +1.75 m","intersection__latp1_75"],
+             ["lateral +3.5 m","intersection__latp3_5"],["yaw +5°","intersection__yawp5"],["yaw +10°","intersection__yawp10"]], init:3},
+    radial:{desc:"Fit to the recording, render a trajectory shifted 2 m sideways, train a new instance on those renders, and compare its predictions at the original poses with the real recording.",
+      clips:[["sequence 1","cycle__12_30_20"],["sequence 3","cycle__31_22"],["sequence 4","cycle__14_25_06"]], init:0},
+    boreas:{desc:"The same 2 m round trip on Boreas's spinning Navtech radar, shown in bird's-eye view. Navtech has no Doppler axis.",
+      clips:[["sequence 1","boreas__obj_win55_104_rc"]], init:0}
+  };
+  var vid=document.getElementById("vid"), chips=document.getElementById("chips"), desc=document.getElementById("set-desc");
+  function play(name){ vid.src=V+name+".mp4"; var p=vid.play(); if(p&&p.catch)p.catch(function(){}); }
+  function showSet(key){
+    var s=SETS[key]; desc.textContent=s.desc; chips.innerHTML="";
+    s.clips.forEach(function(c,i){
+      var b=document.createElement("button"); b.className="chip"; b.type="button"; b.textContent=c[0];
+      b.id="clip-"+key+"-"+i; b.setAttribute("aria-pressed", i===s.init?"true":"false");
+      b.onclick=function(){ chips.querySelectorAll(".chip").forEach(function(x){x.setAttribute("aria-pressed","false")});
+        b.setAttribute("aria-pressed","true"); play(c[1]); };
+      chips.appendChild(b);
+    });
+    play(s.clips[s.init][1]);
+  }
+  document.querySelectorAll("#results .tab").forEach(function(t){
+    t.onclick=function(){ document.querySelectorAll("#results .tab").forEach(function(x){x.setAttribute("aria-selected","false")});
+      t.setAttribute("aria-selected","true"); showSet(t.dataset.set); };
+  });
+  showSet("synth");
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){ vid.removeAttribute("autoplay"); vid.controls=true; vid.pause(); }
+  // pause the clip while it is off screen
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ if(!vid.controls){var p=vid.play(); if(p&&p.catch)p.catch(function(){});} } else vid.pause(); }); },{threshold:.2}).observe(vid);
+  }
+
+  // ----- tables, transcribed from the submitted paper (Tables 1 and 2)
+  var T = {
+    onpath:{note:"Mean ± sample standard deviation across ten RADIal sequences and three Boreas sequences, on held-out frames (every fifth frame). * Doppler lifted for RA-only baselines.",
+      rows:[["RadarSplat*",[23.56,.85],[.068,.028],[-.010,.057],[6.53,5.82],[.073,.048],[.036,.067],[23.92,1.07],[.666,.036],[.178,.249]],
+            ["RadarFields*",[23.13,1.23],[.015,.009],[-.011,.051],[6.97,.96],[.016,.007],[.269,.245],[19.96,.84],[.279,.078],[.016,.128]],
+            ["DyRAD-static",[25.67,.95],[.213,.054],[-.013,.072],[4.71,1.29],[.123,.041],[.070,.083],[25.31,.90],[.749,.018],[.278,.217]],
+            ["DyRAD",[25.88,.95],[.272,.062],[.658,.070],[4.01,1.02],[.179,.041],[.907,.086],[25.36,.90],[.752,.017],[.622,.130]]]},
+    offpath:{note:"Reconstruction at the original poses after a 2 m lateral-shift round trip. Mean ± sample standard deviation across ten RADIal and three Boreas sequences. Not directly comparable with the on-path numbers.",
+      rows:[["RadarSplat*",[23.92,.85],[.076,.032],[-.004,.053],[6.35,4.75],[.077,.050],[.064,.065],[24.29,1.16],[.689,.042],[.211,.237]],
+            ["RadarFields*",[24.43,.75],[.023,.018],[-.011,.048],[9.19,6.07],[.027,.020],[.181,.183],[21.09,1.28],[.538,.081],[.095,.123]],
+            ["DyRAD-static",[26.41,.73],[.335,.054],[.056,.064],[3.47,.61],[.210,.042],[.209,.144],[24.45,.62],[.741,.007],[.261,.215]],
+            ["DyRAD",[26.53,.74],[.363,.052],[.536,.077],[3.25,.57],[.236,.040],[.917,.101],[24.51,.62],[.744,.009],[.641,.165]]]}
+  };
+  var DEC=[2,3,3,2,3,3,2,3,3], SEP={3:1,6:1};
+  function fmt(v,d){ return (v<0?"−":"")+Math.abs(v).toFixed(d).replace(/^0\./, d===3?"0.":"0."); }
+  function showTbl(k){
+    var tb=document.getElementById("tbody"); tb.innerHTML="";
+    T[k].rows.forEach(function(r){
+      var tr=document.createElement("tr"); if(r[0]==="DyRAD") tr.className="ours";
+      var h='<td>'+r[0]+'</td>';
+      for(var i=1;i<r.length;i++){ h+='<td'+(SEP[i-1]?' class="sep"':'')+'>'+fmt(r[i][0],DEC[i-1])+'<span class="sd">±'+r[i][1].toFixed(DEC[i-1])+'</span></td>'; }
+      tr.innerHTML=h; tb.appendChild(tr);
+    });
+    document.getElementById("tbl-note").textContent=T[k].note;
+  }
+  document.querySelectorAll("#quant .tab").forEach(function(t){
+    t.onclick=function(){ document.querySelectorAll("#quant .tab").forEach(function(x){x.setAttribute("aria-selected","false")});
+      t.setAttribute("aria-selected","true"); showTbl(t.dataset.tbl); };
+  });
+  showTbl("onpath");
+
+  // ----- copy BibTeX
+  var cb=document.getElementById("copyBib");
+  cb.onclick=function(){
+    var txt=document.getElementById("bibText").textContent;
+    function sel(){ var r=document.createRange(); r.selectNodeContents(document.getElementById("bibText")); var s=getSelection(); s.removeAllRanges(); s.addRange(r); cb.textContent="Selected"; }
+    try{ navigator.clipboard.writeText(txt).then(function(){cb.textContent="Copied";},sel); }catch(e){ sel(); }
+    setTimeout(function(){cb.textContent="Copy";},1800);
+  };
+})();
+</script>
+</body>
+</html>
