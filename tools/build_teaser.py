@@ -32,42 +32,21 @@ def panel(key, title, tok, x, y):
   </g>'''
 
 
-def car(cls, x, y, w, h, fill, ghost=False, stroke=None):
-    if ghost:
-        body = (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{w * .22:.1f}" fill="#fff" fill-opacity=".85" '
-                f'stroke="{stroke}" stroke-width="1.6" stroke-dasharray="4 3"/>')
-        win = f'fill="{stroke}" fill-opacity=".35"'
-    else:
-        body = f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{w * .22:.1f}" fill="{fill}"/>'
-        win = 'fill="#fff" fill-opacity=".45"'
-    return (f'<g class="{cls}">{body}'
-            f'<rect x="{x + w * .16:.1f}" y="{y + h * .2:.1f}" width="{w * .68:.1f}" height="{h * .22:.1f}" rx="2" {win}/>'
-            f'<rect x="{x + w * .16:.1f}" y="{y + h * .8:.1f}" width="{w * .68:.1f}" height="{h * .09:.1f}" rx="1.5" {win}/></g>')
+ROAD_CLASSES = {  # slide 2 names -> animation roles (see the stage rules in index.html)
+    "Group 26": "carB", "Group 31": "carA", "Group 28": "ego", "Oval 39": "radar",
+    "Group 32": "ghostA", "Straight Arrow Connector 25": "arrA",
+    "Group 29": "ghostE", "Oval 30": "ghostE", "Straight Arrow Connector 27": "arrE",
+    "Triangle 33": "glow",
+    **{f"Straight Arrow Connector {i}": "ray" for i in range(34, 39)},
+}
 
 
 def road():
-    ox, oy = 329, 352  # radar on the ego car's nose
-    base = [-24, -12, 0, 12, 24]
-    extra = [-30, -18, -6, 6, 18, 30]
-    def ray(dx, cls):
-        return (f'<line class="{cls}" x1="{ox}" y1="{oy}" x2="{ox + dx}" y2="{oy - 42}" stroke="#2e8b3a" '
-                f'stroke-width="1.3" marker-end="url(#tz-ah-g)"/>')
-    rays = "".join(ray(d, "ray") for d in base) + "".join(ray(d, "ray ray-x") for d in extra)
-    return f'''
-  <g class="road">
-    <polygon points="270,120 332,120 354,418 248,418" fill="#dcdcdc"/>
-    <line x1="301" y1="120" x2="301" y2="418" stroke="#fff" stroke-width="3" stroke-dasharray="11 9"/>
-    <polygon class="glow" points="{ox},{oy} 296,262 362,262" fill="url(#tz-glow)"/>
-    {car("carB", 318, 140, 21, 33, "#b8304f")}
-    {car("carA", 314, 226, 30, 47, "#b8304f")}
-    <g class="ghostA">{car("", 269, 168, 24, 38, None, True, "#d0506e")}</g>
-    <line class="arrA" x1="316" y1="236" x2="292" y2="206" stroke="#d0506e" stroke-width="1.8" marker-end="url(#tz-ah-p)"/>
-    {car("ego", 312, 350, 34, 54, "#3a3a3a")}
-    <g class="ghostE">{car("", 258, 350, 34, 54, None, True, "#3d8fa6")}<circle cx="275" cy="349" r="3" fill="#3d8fa6"/></g>
-    <line class="arrE" x1="311" y1="382" x2="294" y2="377" stroke="#3d8fa6" stroke-width="1.8" marker-end="url(#tz-ah-t)"/>
-    {rays}
-    <circle cx="{ox}" cy="{oy}" r="3" fill="#2e8b3a"/>
-  </g>'''
+    """The road sketch exactly as drawn on slide 2 (tools/teaser_road.svgfrag, made by
+    tools/pptx_group_to_svg.py), with each element tagged by its role in the animation."""
+    frag = (ROOT / "tools/teaser_road.svgfrag").read_text()
+    frag = re.sub(r'<g data-name="([^"]+)">', lambda m: f'<g class="{ROAD_CLASSES.get(m.group(1), "rd")}" data-name="{m.group(1)}">', frag)
+    return f'<g class="road">{frag}</g>'
 
 
 def plot():
@@ -118,11 +97,10 @@ def svg():
                           f'orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="{c}"/></marker>')
     return f'''<svg class="tz-svg" viewBox="20 92 900 336" role="img" aria-labelledby="tz-title">
   <title id="tz-title">DyRAD re-simulation: from a measured radar frame, DyRAD renders a laterally shifted sensor, a repositioned object and a higher-resolution sensor, and scores higher RAD PSNR and detection hit rate than RadarSplat and RadarFields.</title>
-  <defs>{arrow("p", "#d0506e")}{arrow("t", "#3d8fa6")}{arrow("g", "#2e8b3a")}
-    <linearGradient id="tz-glow" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6b0" stop-opacity=".9"/><stop offset="1" stop-color="#fff6b0" stop-opacity="0"/></linearGradient>
-  </defs>
-  {''.join(panel(*p) for p in PANELS)}
+  <defs></defs>
+  {''.join(panel(*p) for p in PANELS[:2])}
   {road()}
+  {''.join(panel(*p) for p in PANELS[2:])}
   {plot()}
 </svg>'''
 
