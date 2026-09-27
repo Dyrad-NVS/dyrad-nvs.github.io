@@ -115,6 +115,9 @@ figcaption b{color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .chip{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
   font:500 .88rem var(--f-body);padding:6px 13px;border-radius:999px;cursor:pointer}
+.chips[hidden]{display:none}
+.vchips{margin-top:-6px}
+.vchips .chip{font-size:.8rem;padding:4px 11px}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .player{background:#fbfbfb;border:1px solid var(--line);border-radius:12px;padding:8px;box-shadow:var(--shadow)}
 .player video{width:100%;border-radius:6px;background:#fbfbfb}
@@ -183,6 +186,10 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
 .tz[data-stage]:not([data-stage="4"]) .plot{opacity:.3}
 .tz[data-stage]:not([data-stage="4"]) .pt{opacity:0;transform:scale(.2)}
 .tz[data-stage="4"] .pt{transition-delay:var(--d)}
+.tz-svg .parr{transition:opacity .6s ease}
+.tz[data-stage] .parr{opacity:0}
+.tz[data-stage="1"] .p-shift .parr,.tz[data-stage="2"] .p-edit .parr,.tz[data-stage="4"] .parr{opacity:1}
+.tz[data-stage="1"] .p-shift .parr,.tz[data-stage="2"] .p-edit .parr{transition-delay:.9s}
 .tz-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
 .tz-stages{display:flex;flex-wrap:wrap;gap:6px}
 .tz-st,.tz-replay{appearance:none;border:1px solid #d8d8d8;background:#fff;color:#333;border-radius:999px;
@@ -273,6 +280,8 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
     <text class="ax" transform="translate(369 180.7) rotate(-90)" text-anchor="middle">Range [m]</text>
     <text class="ax" x="452.6" y="248.5" text-anchor="middle">Azimuth°</text>
     <text class="ax" x="544.2" y="248.5" text-anchor="middle">Doppler</text>
+    <marker id="tz-pa-edit" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#F3AAB5"/></marker>
+    <g class="parr"><line x1="452.0" y1="216.1" x2="463.9" y2="200.4" stroke="#F3AAB5" stroke-width="1.56" marker-end="url(#tz-pa-edit)"/></g>
   </g>
   <g class="panel p-shift" style="--c:var(--t-nv)">
     <rect x="30" y="262" width="214" height="154" rx="6" fill="#fff" stroke="var(--c)" stroke-width="1.8"/>
@@ -282,6 +291,8 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
     <text class="ax" transform="translate(42 342.7) rotate(-90)" text-anchor="middle">Range [m]</text>
     <text class="ax" x="125.6" y="410.5" text-anchor="middle">Azimuth°</text>
     <text class="ax" x="217.2" y="410.5" text-anchor="middle">Doppler</text>
+    <marker id="tz-pa-shift" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#60C5DE"/></marker>
+    <g class="parr"><line x1="120.7" y1="380.5" x2="133.9" y2="377.8" stroke="#60C5DE" stroke-width="1.56" marker-end="url(#tz-pa-shift)"/><line x1="115.1" y1="354.4" x2="124.1" y2="351.8" stroke="#60C5DE" stroke-width="1.56" marker-end="url(#tz-pa-shift)"/></g>
   </g>
   <g class="panel p-hires" style="--c:var(--t-cfg)">
     <rect x="357" y="262" width="214" height="154" rx="6" fill="#fff" stroke="var(--c)" stroke-width="1.8"/>
@@ -471,6 +482,7 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
   </div>
   <p class="note" id="set-desc" style="margin:0 0 14px"></p>
   <div class="chips" id="chips" role="group" aria-label="Clip"></div>
+  <div class="chips vchips" id="vchips" role="group" aria-label="Viewpoint"></div>
   <div class="legend">
     <span style="--c:#555">Ground truth</span><span style="--c:var(--dyrad)">DyRAD</span>
     <span style="--c:#8a8f9c">DyRAD-static</span><span style="--c:var(--rs)">RadarSplat*</span>
@@ -485,18 +497,6 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
   ego-motion model.</p>
 </section>
 
-<section id="transfer" class="wrap">
-  <div class="shead"><h2>Sensor-configuration transfer</h2><span class="ref">paper §4.3 · Fig. 10 · Table 16</span></div>
-  <figure class="figure lightfig" style="margin:0">
-    <img src="static/images/sensor_transfer.jpg" alt="Measured native RA projection, the coarse-trained scene rendered directly at native resolution, and linear upsampling of the coarse render, with enlarged insets." loading="lazy">
-  </figure>
-  <figcaption>Because the PSF is fixed and kept out of the scene, a scene fit at a coarse configuration
-  renders directly at a finer one without refitting. <b>Left:</b> measured native RA.
-  <b>Middle:</b> the coarse-trained scene rendered with the native PSF and grid. <b>Right:</b> linear
-  upsampling of its coarse render. Direct rendering keeps separate vehicle returns that upsampling blurs
-  together: detection hit rate 0.960 against 0.906 and Chamfer distance 3.20 m against 7.27 m, while
-  upsampling scores higher on full-frame correlation (paper Table 16).</figcaption>
-</section>
 
 <section id="quant" class="wrap">
   <div class="shead"><h2>Quantitative results</h2><span class="ref">paper Tables 1–2</span></div>
@@ -514,6 +514,19 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
     </table>
   </div>
   <p class="note" id="tbl-note"></p>
+</section>
+
+<section id="transfer" class="wrap">
+  <div class="shead"><h2>Sensor-configuration transfer</h2><span class="ref">paper §4.3 · Fig. 10 · Table 16</span></div>
+  <figure class="figure lightfig" style="margin:0">
+    <img src="static/images/sensor_transfer.jpg" alt="Measured native RA projection, the coarse-trained scene rendered directly at native resolution, and linear upsampling of the coarse render, with enlarged insets." loading="lazy">
+  </figure>
+  <figcaption>Because the PSF is fixed and kept out of the scene, a scene fit at a coarse configuration
+  renders directly at a finer one without refitting. <b>Left:</b> measured native RA.
+  <b>Middle:</b> the coarse-trained scene rendered with the native PSF and grid. <b>Right:</b> linear
+  upsampling of its coarse render. Direct rendering keeps separate vehicle returns that upsampling blurs
+  together: detection hit rate 0.960 against 0.906 and Chamfer distance 3.20 m against 7.27 m, while
+  upsampling scores higher on full-frame correlation (paper Table 16).</figcaption>
 </section>
 
 <section id="bibtex" class="wrap">
@@ -537,25 +550,36 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
   var V = "static/videos/";
   var SETS = {
     synth: {desc:"Trained on the recorded trajectory of a synthetic scene, evaluated without refitting against ground-truth RAD measurements at displaced poses.",
-      clips:[["recorded trajectory","intersection__base"],["lateral −1.75 m","intersection__latm1_75"],["lateral +1.75 m","intersection__latp1_75"],
-             ["lateral +3.5 m","intersection__latp3_5"],["yaw +5°","intersection__yawp5"],["yaw +10°","intersection__yawp10"]], init:3},
-    radial:{desc:"Fit to the recording, render a trajectory shifted 2 m sideways, train a new instance on those renders, and compare its predictions at the original poses with the real recording.",
-      clips:[["sequence 1","cycle__12_30_20"],["sequence 3","cycle__31_22"],["sequence 4","cycle__14_25_06"]], init:0},
-    boreas:{desc:"The same 2 m round trip on Boreas's spinning Navtech radar, shown in bird's-eye view. Navtech has no Doppler axis.",
-      clips:[["sequence 1","boreas__obj_win55_104_rc"]], init:0}
+      clips:[["urban canyon","urban_canyon"],["intersection","intersection"],["curve ramp","curve_ramp"],
+             ["open road sparse","open_road_sparse"],["dual carriageway","dual_carriageway"]], init:1,
+      views:[["recorded trajectory","base"],["lateral −1.75 m","latm1_75"],["lateral +1.75 m","latp1_75"],
+             ["lateral +3.5 m","latp3_5"],["yaw +5°","yawp5"],["yaw +10°","yawp10"]], vinit:3},
+    radial:{desc:"Fit to the recording, render a trajectory shifted 2 m sideways, train a new instance on those renders, and compare its predictions at the original poses with the real recording. Ten RADIal sequences.",
+      clips:[["sequence 1","cycle__12_30_20"],["sequence 2","cycle__12_25_47"],["sequence 3","cycle__31_22"],["sequence 4","cycle__14_25_06"],
+             ["sequence 5","cycle__12_20_50"],["sequence 6","cycle__12_00_45"],["sequence 7","cycle__08_56_07"],["sequence 8","cycle__11_15_06"],
+             ["sequence 9","cycle__12_37_16"],["sequence 10","cycle__28_47"]], init:0},
+    boreas:{desc:"The same 2 m round trip on Boreas's spinning Navtech radar, shown in bird's-eye view. Navtech has no Doppler axis. Three Boreas sequences.",
+      clips:[["sequence 1","boreas__obj_win55_104_rc"],["sequence 2","boreas__obj_sparse4_rc"],["sequence 3","boreas__obj_sparse2_rc"]], init:0}
   };
-  var vid=document.getElementById("vid"), chips=document.getElementById("chips"), desc=document.getElementById("set-desc");
-  function play(name){ vid.src=V+name+".mp4"; var p=vid.play(); if(p&&p.catch)p.catch(function(){}); }
-  function showSet(key){
-    var s=SETS[key]; desc.textContent=s.desc; chips.innerHTML="";
-    s.clips.forEach(function(c,i){
+  var vid=document.getElementById("vid"), chips=document.getElementById("chips"), vchips=document.getElementById("vchips"), desc=document.getElementById("set-desc");
+  var cur={set:null, clip:0, view:0};
+  function play(){ var s=SETS[cur.set], n=s.clips[cur.clip][1]; if(s.views) n+="__"+s.views[cur.view][1];
+    vid.src=V+n+".mp4"; var p=vid.play(); if(p&&p.catch)p.catch(function(){}); }
+  function row(el, items, sel, onpick, label){
+    el.innerHTML=""; el.hidden=!items; el.setAttribute("aria-label", label||"");
+    (items||[]).forEach(function(c,i){
       var b=document.createElement("button"); b.className="chip"; b.type="button"; b.textContent=c[0];
-      b.id="clip-"+key+"-"+i; b.setAttribute("aria-pressed", i===s.init?"true":"false");
-      b.onclick=function(){ chips.querySelectorAll(".chip").forEach(function(x){x.setAttribute("aria-pressed","false")});
-        b.setAttribute("aria-pressed","true"); play(c[1]); };
-      chips.appendChild(b);
+      b.setAttribute("aria-pressed", String(i===sel));
+      b.onclick=function(){ el.querySelectorAll(".chip").forEach(function(x){x.setAttribute("aria-pressed","false")});
+        b.setAttribute("aria-pressed","true"); onpick(i); play(); };
+      el.appendChild(b);
     });
-    play(s.clips[s.init][1]);
+  }
+  function showSet(key){
+    var s=SETS[key]; cur={set:key, clip:s.init, view:s.vinit||0}; desc.textContent=s.desc;
+    row(chips, s.clips, cur.clip, function(i){cur.clip=i;}, s.views?"Scene":"Sequence");
+    row(vchips, s.views, cur.view, function(i){cur.view=i;}, "Viewpoint");
+    play();
   }
   document.querySelectorAll("#results .tab").forEach(function(t){
     t.onclick=function(){ document.querySelectorAll("#results .tab").forEach(function(x){x.setAttribute("aria-selected","false")});

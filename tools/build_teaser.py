@@ -18,6 +18,27 @@ PANELS = [  # key, title, colour token, frame x, frame y
 ]
 
 
+EMU = 12192  # EMU per slide unit (the 16:9 slide is 12192000 EMU = 1000 units wide)
+# arrows drawn on the RA panels themselves (slide 2 connectors 76, 77, 81): (off x, off y, ext cx, ext cy) in EMU,
+# all flipV, so each runs from the bottom-left to the top-right of its box with the head at the top-right end
+PANEL_ARROWS = {
+    "shift": ("#60C5DE", [(1471571, 4605557, 160665, 33645), (1402781, 4288823, 110816, 31699)]),
+    "edit": ("#F3AAB5", [(5510249, 2443160, 145921, 191946)]),
+}
+
+
+def panel_arrows(key):
+    if key not in PANEL_ARROWS:
+        return ""
+    col, arrs = PANEL_ARROWS[key]
+    lines = "".join(
+        f'<line x1="{ox / EMU:.1f}" y1="{(oy + cy) / EMU:.1f}" x2="{(ox + cx) / EMU:.1f}" y2="{oy / EMU:.1f}" '
+        f'stroke="{col}" stroke-width="1.56" marker-end="url(#tz-pa-{key})"/>' for ox, oy, cx, cy in arrs)
+    return (f'\n    <marker id="tz-pa-{key}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" '
+            f'orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="{col}"/></marker>'
+            f'\n    <g class="parr">{lines}</g>')
+
+
 def panel(key, title, tok, x, y):
     # image placement and type sizes from slide 2: the graphic spans 181 x 115 units at (x+17, y+23),
     # titles are 14 pt bold and axis labels 9 pt Helvetica (1 pt = 1.04 units, panel groups scale ~1.06)
@@ -31,7 +52,7 @@ def panel(key, title, tok, x, y):
     <image href="{IMG}d_{key}.jpg" x="{ix + iw + gap:.1f}" y="{iy:.1f}" width="{dw:.1f}" height="{ih:.1f}" preserveAspectRatio="none"/>
     <text class="ax" transform="translate({x + 12} {iy + ih / 2:.1f}) rotate(-90)" text-anchor="middle">Range [m]</text>
     <text class="ax" x="{ix + iw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Azimuth°</text>
-    <text class="ax" x="{ix + iw + gap + dw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Doppler</text>
+    <text class="ax" x="{ix + iw + gap + dw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Doppler</text>{panel_arrows(key)}
   </g>'''
 
 
