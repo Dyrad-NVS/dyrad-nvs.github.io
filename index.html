@@ -458,7 +458,7 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
   </figure>
   <ol class="steps">
     <li><b>Input</b>Recorded RAD tensors, sensor poses, object bounding boxes, and the radar's processing chain.</li>
-    <li><b>Scene initialization</b>Point reflectors are seeded from the measurements, the boxes split them into background and objects and start each object's track, and the processing chain fixes the sensor PSF.</li>
+    <li><b>Scene initialization</b>Point reflectors are seeded from the measurements, the boxes split them into background and objects and initialize each object's track, and the processing chain fixes the sensor PSF.</li>
     <li><b>Optimization</b>The differentiable RAD renderer lets reflectors and tracks be fit jointly to the recorded measurements, with <span style="font-family:var(--f-mono)">𝓛 = 𝓛<sub>rec</sub> + λ<sub>int</sub>𝓛<sub>int</sub></span>.</li>
     <li><b>Novel views</b>The optimized scene renders RAD tensors at new times, sensor poses and configurations.</li>
   </ol>
@@ -641,7 +641,7 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
     var cap=document.getElementById("mt-cap"), btns=fig.querySelectorAll(".mt-st");
     var ORDER=["0","1","2m","2","3"], DUR={"0":2200,"1":4600,"2m":9400,"2":4200};
     var CAPS={"0":"1 · Input. Recorded RAD tensors with sensor poses, the object bounding boxes, and the radar's processing chain.",
-      "1":"2 · Scene initialization. Point reflectors are seeded from the measurements; the boxes separate object reflectors (red) from the background and start each object's track (blue); the processing chain fixes the sensor PSF.",
+      "1":"2 · Scene initialization. Point reflectors are seeded from the measurements; the boxes separate object reflectors (red) from the background and initialize each object's track (blue); the processing chain fixes the sensor PSF.",
       "2m":"3 · Optimization: motion. Each object moves rigidly along its learned track, translating and rotating between track points: x<sub>i</sub>(t) = p<sub>j</sub>(t) + R<sub>j</sub>(t) μ<sub>i</sub>. Its velocity is the least-squares slope over four neighbouring track points, which gives each reflector its Doppler.",
       "2":"3 · Optimization: rendering. The RAD renderer predicts every recorded frame; the loss compares predictions with the measurements, and gradients flow back to the reflectors and tracks.",
       "3":"4 · Novel views. The optimized scene renders RAD tensors at new times and sensor poses."};
