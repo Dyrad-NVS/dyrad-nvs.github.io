@@ -493,6 +493,7 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
   </div>
   <p class="note">Every clip shows all methods on the same scene at the same instant, on one brightness scale.
   ρ is the Pearson correlation with the ground truth for that frame. White boxes mark annotated vehicles.
+  <b>DyRAD-static</b> keeps our point-reflector representation and renderer but treats every reflector as static and does not use the bounding boxes to separate objects during initialization. Comparing it with the full model measures the combined benefit of object separation and motion modelling.
   * RadarSplat and RadarFields predict only RA measurements; their Doppler is assigned from a static
   ego-motion model.</p>
 </section>
@@ -514,6 +515,7 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
     </table>
   </div>
   <p class="note" id="tbl-note"></p>
+  <p class="note"><b>DyRAD-static</b> keeps our point-reflector representation and renderer but treats every reflector as static and does not use the bounding boxes to separate objects during initialization. Comparing it with the full model measures the combined benefit of object separation and motion modelling.</p>
 </section>
 
 <section id="transfer" class="wrap">
