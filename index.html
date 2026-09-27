@@ -145,6 +145,81 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
 }
 @media (max-width:480px){ .steps{grid-template-columns:1fr} .wrap,.wide{padding-inline:16px} }
 @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+/* ----- animated teaser */
+:root{--t-gt:#6b6b6b;--t-edit:#d0506e;--t-nv:#3d8fa6;--t-cfg:#3c9a35}
+.tz{padding:14px 14px 12px}
+.tz-svg{width:100%;height:auto;display:block;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+.tz-svg .ptitle{font-size:11.5px;font-weight:700}
+.tz-svg .ax{font-size:7px;fill:#333}
+.tz-svg .tick{font-size:10px;fill:#333}
+.tz-svg .axl{font-size:12px;fill:#333}
+.tz-svg .lg{font-size:10.5px}
+.tz-svg .grid{stroke:#b9b9b9;stroke-width:.8;stroke-dasharray:3 3}
+.tz-svg .panel,.tz-svg .ghostA,.tz-svg .ghostE,.tz-svg .arrA,.tz-svg .arrE,.tz-svg .ray-x,.tz-svg .glow,.tz-svg .pt,.tz-svg .plot{
+  transition:opacity .6s ease,transform 1.2s cubic-bezier(.45,0,.2,1),stroke-dashoffset 1s ease}
+.tz-svg .arrA,.tz-svg .arrE{stroke-dasharray:44;stroke-dashoffset:0}
+.tz-svg .pt{transform-box:fill-box;transform-origin:center}
+.tz[data-stage] .panel{opacity:.28}
+.tz[data-stage] .p-gt{opacity:1}
+.tz[data-stage="1"] .p-shift,.tz[data-stage="2"] .p-edit,.tz[data-stage="3"] .p-hires,.tz[data-stage="4"] .panel{opacity:1}
+.tz[data-stage="0"] .ghostE{opacity:0;transform:translate(54px,0)}
+.tz[data-stage="0"] .arrE{stroke-dashoffset:44;opacity:0}
+.tz[data-stage="0"] .ghostA,.tz[data-stage="1"] .ghostA{opacity:0;transform:translate(45px,58px)}
+.tz[data-stage="0"] .arrA,.tz[data-stage="1"] .arrA{stroke-dashoffset:44;opacity:0}
+.tz[data-stage="0"] .ray-x,.tz[data-stage="1"] .ray-x,.tz[data-stage="2"] .ray-x{opacity:0}
+.tz[data-stage="0"] .glow,.tz[data-stage="1"] .glow,.tz[data-stage="2"] .glow{opacity:.45}
+.tz[data-stage="3"] .ray-x{transition-delay:.3s}
+.tz[data-stage]:not([data-stage="4"]) .plot{opacity:.3}
+.tz[data-stage]:not([data-stage="4"]) .pt{opacity:0;transform:scale(.2)}
+.tz[data-stage="4"] .pt{transition-delay:var(--d)}
+.tz-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.tz-stages{display:flex;flex-wrap:wrap;gap:6px}
+.tz-st,.tz-replay{appearance:none;border:1px solid #d8d8d8;background:#fff;color:#333;border-radius:999px;
+  font:500 .84rem var(--f-body);padding:5px 12px;cursor:pointer}
+.tz-st::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:7px;vertical-align:1px}
+.tz-st[aria-pressed="true"]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);font-weight:600}
+.tz-cap{margin:10px 2px 0;color:#555;font-size:.93rem;min-height:3em}
+@media (prefers-reduced-motion:reduce){.tz-svg *{transition:none!important}}
+/* ----- animated method + motion model */
+.mt{padding:14px 14px 12px}
+.mt-svg{width:100%;height:auto;display:block;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+.mt-svg .hd{font-size:13.5px;fill:#222}
+.mt-svg .sb{font-size:9px;font-style:italic}
+.mt-svg .it{font-size:12px;font-style:italic;fill:#222}
+.mt-svg .lgd{font-size:13.5px}
+.mt-svg .mtitle{font-size:26px;fill:#333}
+.mt-svg .mlab{font-size:28px;fill:#111}
+.mt-svg .mleg{font-size:20px;fill:#222}
+.mt-svg .st-in,.mt-svg .st-init,.mt-svg .st-opt,.mt-svg .st-nv,.mt-svg .seeds,.mt-svg .knots-i,.mt-svg .knots-s,.mt-svg .obj,
+.mt-svg .a-init,.mt-svg .mcall,.mt-svg .legendbox{transition:opacity .6s ease}
+.mt-svg .sweep{transform-box:view-box;transform-origin:342px 226px;transition:transform 1.8s cubic-bezier(.3,0,.2,1)}
+.mt-svg .psfwipe{transform-box:view-box;transform-origin:280px 284px;transition:transform 1.2s ease .9s}
+.mt-svg .wipe{transform-box:view-box;transform-origin:870px 236px;transition:transform 1.4s ease .4s}
+.mt-svg .mcall{opacity:0;pointer-events:none}
+.mt[data-stage] .legendbox{opacity:.35}
+.mt[data-stage="0"] .st-init,.mt[data-stage="0"] .st-opt,.mt[data-stage="0"] .st-nv,
+.mt[data-stage="1"] .st-opt,.mt[data-stage="1"] .st-nv,
+.mt[data-stage="2m"] .st-nv,.mt[data-stage="2"] .st-nv{opacity:.12}
+.mt[data-stage="0"] .sweep{transform:scale(0)}
+.mt[data-stage="0"] .psfwipe{transform:scaleX(0)}
+.mt[data-stage="0"] .seeds,.mt[data-stage="0"] .knots-i,.mt[data-stage="0"] .a-init{opacity:0}
+.mt[data-stage="1"] .seeds{transition-delay:1.7s}
+.mt[data-stage="1"] .knots-i{transition-delay:2.3s}
+.mt[data-stage="1"] .a-init{transition-delay:2.9s}
+.mt[data-stage="0"] .wipe,.mt[data-stage="1"] .wipe,.mt[data-stage="2m"] .wipe,.mt[data-stage="2"] .wipe{transform:scaleX(0)}
+.mt[data-stage="2m"] .mcall{opacity:1}
+.mt[data-stage="2m"] .st-in,.mt[data-stage="2m"] .st-init{opacity:.35}
+.mt[data-stage="2m"] .obj0,.mt[data-stage="2"] .obj0{animation:mt-drive0 2.6s ease-in-out infinite alternate}
+.mt[data-stage="2m"] .obj1,.mt[data-stage="2"] .obj1{animation:mt-drive1 2.6s ease-in-out infinite alternate}
+@keyframes mt-drive0{to{transform:translate(0,-15px)}}
+@keyframes mt-drive1{to{transform:translate(.6px,-22px)}}
+.mt[data-stage="2"] .fl,.mt[data-stage="3"] .a-nv{stroke-dasharray:7 4;animation:mt-flow .7s linear infinite}
+.mt[data-stage="2"] .gr{animation:mt-grad .9s linear infinite}
+.mt[data-stage="2"] .loss rect{animation:mt-pulse 1.4s ease-in-out infinite}
+@keyframes mt-flow{from{stroke-dashoffset:22}to{stroke-dashoffset:0}}
+@keyframes mt-grad{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+@keyframes mt-pulse{50%{fill:#ee8c9d}}
+@media (prefers-reduced-motion:reduce){.mt-svg *{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -163,17 +238,98 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
 </header>
 
 <div class="wrap">
-  <figure class="figure lightfig slot" style="margin:0">
-    <span class="slot-tag">static · animation in progress</span>
-    <img src="static/images/teaser_static.jpg" alt="Radar re-simulation with DyRAD: a ground-truth RA/Doppler measurement, and DyRAD renders under a repositioned object, a lateral sensor shift and a higher-resolution sensor, beside a plot of RAD PSNR against detection hit rate for DyRAD, RadarSplat and RadarFields." width="1650" height="605">
+  <figure class="figure lightfig tz" id="teaser" style="margin:0">
+    <!--TEASER-SVG--><svg class="tz-svg" viewBox="20 92 900 336" role="img" aria-labelledby="tz-title">
+  <title id="tz-title">DyRAD re-simulation: from a measured radar frame, DyRAD renders a laterally shifted sensor, a repositioned object and a higher-resolution sensor, and scores higher RAD PSNR and detection hit rate than RadarSplat and RadarFields.</title>
+  <defs><marker id="tz-ah-p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d0506e"/></marker><marker id="tz-ah-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3d8fa6"/></marker><marker id="tz-ah-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2e8b3a"/></marker>
+    <linearGradient id="tz-glow" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6b0" stop-opacity=".9"/><stop offset="1" stop-color="#fff6b0" stop-opacity="0"/></linearGradient>
+  </defs>
+  
+  <g class="panel p-gt" style="--c:var(--t-gt)">
+    <rect x="30" y="100" width="214" height="154" rx="6" fill="#fff" stroke="var(--c)" stroke-width="1.8"/>
+    <text x="38" y="115" class="ptitle" fill="var(--c)">Ground Truth</text>
+    <image href="static/images/teaser/ra_gt.jpg" x="50" y="123" width="152" height="111" preserveAspectRatio="none"/>
+    <image href="static/images/teaser/d_gt.jpg" x="205" y="123" width="19" height="111" preserveAspectRatio="none"/>
+    <text class="ax" transform="translate(44 178.5) rotate(-90)" text-anchor="middle">Range [m]</text>
+    <text class="ax" x="126.0" y="245" text-anchor="middle">Azimuth°</text>
+    <text class="ax" x="214.5" y="245" text-anchor="middle">Doppler</text>
+  </g>
+  <g class="panel p-edit" style="--c:var(--t-edit)">
+    <rect x="357" y="100" width="214" height="154" rx="6" fill="#fff" stroke="var(--c)" stroke-width="1.8"/>
+    <text x="365" y="115" class="ptitle" fill="var(--c)">Repositioned Object</text>
+    <image href="static/images/teaser/ra_edit.jpg" x="377" y="123" width="152" height="111" preserveAspectRatio="none"/>
+    <image href="static/images/teaser/d_edit.jpg" x="532" y="123" width="19" height="111" preserveAspectRatio="none"/>
+    <text class="ax" transform="translate(371 178.5) rotate(-90)" text-anchor="middle">Range [m]</text>
+    <text class="ax" x="453.0" y="245" text-anchor="middle">Azimuth°</text>
+    <text class="ax" x="541.5" y="245" text-anchor="middle">Doppler</text>
+  </g>
+  <g class="panel p-shift" style="--c:var(--t-nv)">
+    <rect x="30" y="262" width="214" height="154" rx="6" fill="#fff" stroke="var(--c)" stroke-width="1.8"/>
+    <text x="38" y="277" class="ptitle" fill="var(--c)">Lateral Sensor Shift</text>
+    <image href="static/images/teaser/ra_shift.jpg" x="50" y="285" width="152" height="111" preserveAspectRatio="none"/>
+    <image href="static/images/teaser/d_shift.jpg" x="205" y="285" width="19" height="111" preserveAspectRatio="none"/>
+    <text class="ax" transform="translate(44 340.5) rotate(-90)" text-anchor="middle">Range [m]</text>
+    <text class="ax" x="126.0" y="407" text-anchor="middle">Azimuth°</text>
+    <text class="ax" x="214.5" y="407" text-anchor="middle">Doppler</text>
+  </g>
+  <g class="panel p-hires" style="--c:var(--t-cfg)">
+    <rect x="357" y="262" width="214" height="154" rx="6" fill="#fff" stroke="var(--c)" stroke-width="1.8"/>
+    <text x="365" y="277" class="ptitle" fill="var(--c)">High Res Sensor</text>
+    <image href="static/images/teaser/ra_hires.jpg" x="377" y="285" width="152" height="111" preserveAspectRatio="none"/>
+    <image href="static/images/teaser/d_hires.jpg" x="532" y="285" width="19" height="111" preserveAspectRatio="none"/>
+    <text class="ax" transform="translate(371 340.5) rotate(-90)" text-anchor="middle">Range [m]</text>
+    <text class="ax" x="453.0" y="407" text-anchor="middle">Azimuth°</text>
+    <text class="ax" x="541.5" y="407" text-anchor="middle">Doppler</text>
+  </g>
+  
+  <g class="road">
+    <polygon points="270,120 332,120 354,418 248,418" fill="#dcdcdc"/>
+    <line x1="301" y1="120" x2="301" y2="418" stroke="#fff" stroke-width="3" stroke-dasharray="11 9"/>
+    <polygon class="glow" points="329,352 296,262 362,262" fill="url(#tz-glow)"/>
+    <g class="carB"><rect x="318" y="140" width="21" height="33" rx="4.6" fill="#b8304f"/><rect x="321.4" y="146.6" width="14.3" height="7.3" rx="2" fill="#fff" fill-opacity=".45"/><rect x="321.4" y="166.4" width="14.3" height="3.0" rx="1.5" fill="#fff" fill-opacity=".45"/></g>
+    <g class="carA"><rect x="314" y="226" width="30" height="47" rx="6.6" fill="#b8304f"/><rect x="318.8" y="235.4" width="20.4" height="10.3" rx="2" fill="#fff" fill-opacity=".45"/><rect x="318.8" y="263.6" width="20.4" height="4.2" rx="1.5" fill="#fff" fill-opacity=".45"/></g>
+    <g class="ghostA"><g class=""><rect x="269" y="168" width="24" height="38" rx="5.3" fill="#fff" fill-opacity=".85" stroke="#d0506e" stroke-width="1.6" stroke-dasharray="4 3"/><rect x="272.8" y="175.6" width="16.3" height="8.4" rx="2" fill="#d0506e" fill-opacity=".35"/><rect x="272.8" y="198.4" width="16.3" height="3.4" rx="1.5" fill="#d0506e" fill-opacity=".35"/></g></g>
+    <line class="arrA" x1="316" y1="236" x2="292" y2="206" stroke="#d0506e" stroke-width="1.8" marker-end="url(#tz-ah-p)"/>
+    <g class="ego"><rect x="312" y="350" width="34" height="54" rx="7.5" fill="#3a3a3a"/><rect x="317.4" y="360.8" width="23.1" height="11.9" rx="2" fill="#fff" fill-opacity=".45"/><rect x="317.4" y="393.2" width="23.1" height="4.9" rx="1.5" fill="#fff" fill-opacity=".45"/></g>
+    <g class="ghostE"><g class=""><rect x="258" y="350" width="34" height="54" rx="7.5" fill="#fff" fill-opacity=".85" stroke="#3d8fa6" stroke-width="1.6" stroke-dasharray="4 3"/><rect x="263.4" y="360.8" width="23.1" height="11.9" rx="2" fill="#3d8fa6" fill-opacity=".35"/><rect x="263.4" y="393.2" width="23.1" height="4.9" rx="1.5" fill="#3d8fa6" fill-opacity=".35"/></g><circle cx="275" cy="349" r="3" fill="#3d8fa6"/></g>
+    <line class="arrE" x1="311" y1="382" x2="294" y2="377" stroke="#3d8fa6" stroke-width="1.8" marker-end="url(#tz-ah-t)"/>
+    <line class="ray" x1="329" y1="352" x2="305" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray" x1="329" y1="352" x2="317" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray" x1="329" y1="352" x2="329" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray" x1="329" y1="352" x2="341" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray" x1="329" y1="352" x2="353" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray ray-x" x1="329" y1="352" x2="299" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray ray-x" x1="329" y1="352" x2="311" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray ray-x" x1="329" y1="352" x2="323" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray ray-x" x1="329" y1="352" x2="335" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray ray-x" x1="329" y1="352" x2="347" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/><line class="ray ray-x" x1="329" y1="352" x2="359" y2="310" stroke="#2e8b3a" stroke-width="1.3" marker-end="url(#tz-ah-g)"/>
+    <circle cx="329" cy="352" r="3" fill="#2e8b3a"/>
+  </g>
+  
+  <g class="plot">
+    <rect x="620" y="102.7" width="276" height="285.3" fill="#fff" stroke="#8a8a8a" stroke-width="1"/>
+    <line x1="628.0" y1="102.7" x2="628.0" y2="388" class="grid"/><text class="tick" x="628.0" y="402" text-anchor="middle">0.0</text><line x1="681.6" y1="102.7" x2="681.6" y2="388" class="grid"/><text class="tick" x="681.6" y="402" text-anchor="middle">0.2</text><line x1="735.2" y1="102.7" x2="735.2" y2="388" class="grid"/><text class="tick" x="735.2" y="402" text-anchor="middle">0.4</text><line x1="788.8" y1="102.7" x2="788.8" y2="388" class="grid"/><text class="tick" x="788.8" y="402" text-anchor="middle">0.6</text><line x1="842.4" y1="102.7" x2="842.4" y2="388" class="grid"/><text class="tick" x="842.4" y="402" text-anchor="middle">0.8</text><line x1="896.0" y1="102.7" x2="896.0" y2="388" class="grid"/><text class="tick" x="896.0" y="402" text-anchor="middle">1.0</text><line x1="622" y1="380.0" x2="896" y2="380.0" class="grid"/><text class="tick" x="618" y="384.0" text-anchor="end">23</text><line x1="622" y1="316.2" x2="896" y2="316.2" class="grid"/><text class="tick" x="618" y="320.2" text-anchor="end">24</text><line x1="622" y1="252.5" x2="896" y2="252.5" class="grid"/><text class="tick" x="618" y="256.5" text-anchor="end">25</text><line x1="622" y1="188.8" x2="896" y2="188.8" class="grid"/><text class="tick" x="618" y="192.8" text-anchor="end">26</text><line x1="622" y1="125.0" x2="896" y2="125.0" class="grid"/><text class="tick" x="618" y="129.0" text-anchor="end">27</text>
+    <text class="axl" x="762.0" y="420" text-anchor="middle">Detection (Hit Rate) →</text>
+    <text class="axl" transform="translate(592 241.3) rotate(-90)" text-anchor="middle">RAD PSNR [dB] →</text>
+    
+    <g class="legend">
+      <rect x="632" y="124" width="150" height="112" fill="#fff" fill-opacity=".9"/>
+      <circle cx="644" cy="138" r="7" fill="#d0335b" stroke="#a8123a" stroke-width="1.5"/><text x="658" y="142" class="lg" fill="#b8173f" font-weight="700">DyRAD (ours)</text>
+      <circle cx="644" cy="157" r="6" fill="#cf8ee6"/><text x="658" y="161" class="lg" fill="#9a45c0">RadarSplat</text>
+      <circle cx="644" cy="176" r="6" fill="#8fcbe3"/><text x="658" y="180" class="lg" fill="#2f86ad">RadarFields</text>
+      <circle cx="644" cy="202" r="6" fill="#666"/><text x="658" y="206" class="lg" fill="#555">on-path</text>
+      <circle cx="644" cy="221" r="5.5" fill="#fff" stroke="#666" stroke-width="2"/><text x="658" y="225" class="lg" fill="#555">off-path, +2 m</text>
+    </g>
+    <g style="--k:#cf8ee6;--k2:#b56bd6"><circle class="pt pt-rs" style="--d:0.00s" cx="637.6" cy="344.3" r="7" fill="var(--k)" stroke="var(--k2)" stroke-width="1.5"/><circle class="pt pt-rs" style="--d:0.15s" cx="645.2" cy="321.3" r="7" fill="#fff" stroke="var(--k2)" stroke-width="2"/></g>
+    <g style="--k:#8fcbe3;--k2:#5aaed0"><circle class="pt pt-rf" style="--d:0.35s" cx="700.1" cy="371.7" r="7" fill="var(--k)" stroke="var(--k2)" stroke-width="1.5"/><circle class="pt pt-rf" style="--d:0.50s" cx="676.5" cy="288.8" r="7" fill="#fff" stroke="var(--k2)" stroke-width="2"/></g>
+    <g style="--k:#d0335b;--k2:#a8123a"><circle class="pt pt-dy" style="--d:0.70s" cx="871.1" cy="196.4" r="9" fill="var(--k)" stroke="var(--k2)" stroke-width="1.5"/><circle class="pt pt-dy" style="--d:0.85s" cx="873.8" cy="155.0" r="9" fill="#fff" stroke="var(--k2)" stroke-width="3"/></g>
+  </g>
+</svg><!--/TEASER-SVG-->
+    <div class="tz-bar">
+      <div class="tz-stages" role="group" aria-label="Teaser stage">
+        <button type="button" class="tz-st" data-go="0" style="--c:#6b6b6b">Measured</button>
+        <button type="button" class="tz-st" data-go="1" style="--c:var(--t-nv)">Novel viewpoint</button>
+        <button type="button" class="tz-st" data-go="2" style="--c:var(--t-edit)">Scene editing</button>
+        <button type="button" class="tz-st" data-go="3" style="--c:var(--t-cfg)">Sensor configuration</button>
+        <button type="button" class="tz-st" data-go="4" style="--c:#b8173f">Results</button>
+      </div>
+      <button type="button" class="tz-replay" id="tz-replay" aria-label="Replay the teaser animation">↻ Replay</button>
+    </div>
+    <p class="tz-cap" id="tz-cap" aria-live="polite">From recorded radar, poses and object boxes, DyRAD reconstructs the scene and renders it from new viewpoints, with edited objects and for other sensors.</p>
   </figure>
   <p class="tldr"><b>DyRAD</b> reconstructs a dynamic driving scene from recorded radar and renders full
     range–azimuth–Doppler tensors from poses, sensors and scene layouts it never recorded.</p>
-  <div class="caps">
-    <span style="--c:var(--nv)">novel viewpoints</span>
-    <span style="--c:var(--cfg)">sensor-configuration changes</span>
-    <span style="--c:var(--dyrad)">scene editing</span>
-  </div>
 </div>
 
 <section id="abstract" class="wrap">
@@ -202,9 +358,102 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
 
 <section id="method" class="wrap">
   <div class="shead"><h2>Method</h2><span class="ref">paper §3 · Figs. 2–3</span></div>
-  <figure class="figure lightfig slot" style="margin:0">
-    <span class="slot-tag">static · one animation in progress</span>
-    <img src="static/images/method_static.jpg" alt="DyRAD overview: recorded RAD tensors, poses, object boxes and the radar processing chain initialize a learned scene of reflectors and object tracks; a RAD renderer with a fixed sensor model produces predictions and novel views, with gradients flowing back from the loss." loading="lazy">
+  <figure class="figure lightfig mt" id="method-fig" style="margin:0">
+    <!--METHOD-SVG--><svg class="mt-svg" viewBox="0 0 1113 367" role="img" aria-labelledby="mt-title">
+  <title id="mt-title">DyRAD overview. Inputs: recorded RAD tensors, sensor poses, object bounding boxes and the radar processing chain. Initialization seeds point reflectors and object tracks and fixes the sensor PSF. Optimization fits reflectors and tracks through the differentiable RAD renderer, with each object moving rigidly along its learned track. Inference renders RAD tensors at new times and poses.</title>
+  <defs><marker id="mt-ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7a7a7a"/></marker><marker id="mt-ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#cc1f2f"/></marker><marker id="mt-ahv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#16813a"/></marker><marker id="mt-ahm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.5" markerHeight="3.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7a3fb6"/></marker>
+    <clipPath id="mt-sweep"><circle class="sweep" cx="342" cy="226" r="190"/></clipPath>
+    <clipPath id="mt-wipe"><rect class="wipe" x="870" y="236" width="230" height="120"/></clipPath>
+    <clipPath id="mt-psfclip"><rect class="psfwipe" x="280" y="284" width="124" height="54"/></clipPath>
+    <filter id="mt-sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity=".18"/></filter>
+  </defs>
+
+  <!-- 1 · input -->
+  <g class="st-in">
+    <g class=""><rect x="10" y="48" width="232" height="156" rx="5" fill="#fff" stroke="#2f7f93" stroke-width="1.6"/><rect x="10" y="48" width="232" height="26" rx="5" fill="#cfe8ef" stroke="#2f7f93" stroke-width="1.6"/><text x="126.0" y="66.0" text-anchor="middle" class="hd"></text><text x="126" y="66" text-anchor="middle" class="hd">Radar Tensors {<tspan font-style="italic">Y</tspan><tspan dy="4" class="sb">t</tspan><tspan dy="-4">, </tspan><tspan font-style="italic">P</tspan><tspan dy="4" class="sb">t</tspan><tspan dy="-4" dx="1.5">}</tspan><tspan dy="-6" dx=".5" class="sb">T</tspan><tspan dy="10" dx="-5" class="sb">t=1</tspan></text></g>
+    <image href="static/images/method/tensors.jpg" x="14" y="78" width="224" height="124"/>
+    <g class=""><rect x="10" y="210" width="232" height="28" rx="5" fill="#fff" stroke="#2f7f93" stroke-width="1.6"/><rect x="10" y="210" width="232" height="28" rx="5" fill="#cfe8ef" stroke="#2f7f93" stroke-width="1.6"/><text x="126.0" y="229.0" text-anchor="middle" class="hd">Object Bounding Boxes</text></g>
+    <g class=""><rect x="10" y="268" width="232" height="72" rx="5" fill="#fff" stroke="#2f7f93" stroke-width="1.6"/><rect x="10" y="268" width="232" height="26" rx="5" fill="#cfe8ef" stroke="#2f7f93" stroke-width="1.6"/><text x="126.0" y="286.0" text-anchor="middle" class="hd">Radar Processing Chain</text>
+      <text x="22" y="314" class="it">Doppler / DDMA → Range FFT</text><text x="22" y="332" class="it">→ Azimuth beamforming</text></g>
+  </g>
+
+  <!-- 2 · scene initialization -->
+  <g class="st-init">
+    <path class="fl a-in" d="M242,140 H274" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/><path class="fl a-in" d="M242,224 H274" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/><path class="fl a-in" d="M242,304 H274" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/>
+    <g class=""><rect x="276" y="48" width="132" height="180" rx="5" fill="#fff" stroke="#6a2a8c" stroke-width="1.6"/><rect x="276" y="48" width="132" height="42" rx="5" fill="#e6d8f0" stroke="#6a2a8c" stroke-width="1.6"/><text x="342.0" y="66.0" text-anchor="middle" class="hd">Scene</text><text x="342.0" y="82.0" text-anchor="middle" class="hd">Initialization</text></g>
+    <image class="cloud" href="static/images/method/init_bg.jpg" x="279" y="94" width="126" height="132" clip-path="url(#mt-sweep)"/>
+    <g class="seeds" fill="#e3122f"><circle cx="340.5" cy="155.3" r="1.1"/><circle cx="342.6" cy="155.9" r="1.1"/><circle cx="346.7" cy="150.3" r="1.1"/><circle cx="336.9" cy="158.3" r="1.1"/><circle cx="340.8" cy="152.1" r="1.1"/><circle cx="352.6" cy="154.5" r="1.1"/><circle cx="350.1" cy="154.6" r="1.1"/><circle cx="346.9" cy="151.2" r="1.1"/><circle cx="346.8" cy="158.6" r="1.1"/><circle cx="345.0" cy="157.3" r="1.1"/><circle cx="347.4" cy="150.3" r="1.1"/><circle cx="348.8" cy="155.8" r="1.1"/><circle cx="341.5" cy="150.0" r="1.1"/><circle cx="350.5" cy="154.6" r="1.1"/><circle cx="348.2" cy="158.7" r="1.1"/><circle cx="348.1" cy="159.2" r="1.1"/><circle cx="343.0" cy="157.9" r="1.1"/><circle cx="343.8" cy="159.3" r="1.1"/><circle cx="350.7" cy="150.7" r="1.1"/><circle cx="338.8" cy="151.9" r="1.1"/><circle cx="352.1" cy="154.2" r="1.1"/><circle cx="346.7" cy="152.8" r="1.1"/><circle cx="344.8" cy="153.7" r="1.1"/><circle cx="342.3" cy="155.7" r="1.1"/><circle cx="346.0" cy="159.0" r="1.1"/><circle cx="347.6" cy="159.3" r="1.1"/><circle cx="350.4" cy="159.9" r="1.1"/><circle cx="347.4" cy="151.4" r="1.1"/><circle cx="350.4" cy="159.6" r="1.1"/><circle cx="351.1" cy="155.5" r="1.1"/><circle cx="348.1" cy="151.9" r="1.1"/><circle cx="350.0" cy="155.6" r="1.1"/><circle cx="341.2" cy="150.3" r="1.1"/><circle cx="350.3" cy="159.9" r="1.1"/><circle cx="338.1" cy="157.9" r="1.1"/><circle cx="343.2" cy="151.2" r="1.1"/><circle cx="341.4" cy="157.6" r="1.1"/><circle cx="350.6" cy="150.1" r="1.1"/><circle cx="346.5" cy="150.1" r="1.1"/><circle cx="348.2" cy="153.1" r="1.1"/><circle cx="350.8" cy="159.8" r="1.1"/><circle cx="344.8" cy="160.0" r="1.1"/><circle cx="341.6" cy="150.5" r="1.1"/><circle cx="346.3" cy="150.0" r="1.1"/><circle cx="339.8" cy="153.9" r="1.1"/><circle cx="346.4" cy="151.3" r="1.1"/><circle cx="337.3" cy="158.6" r="1.1"/><circle cx="341.7" cy="159.6" r="1.1"/><circle cx="351.0" cy="153.6" r="1.1"/><circle cx="344.0" cy="155.0" r="1.1"/><circle cx="347.0" cy="155.8" r="1.1"/><circle cx="345.6" cy="156.1" r="1.1"/><circle cx="351.7" cy="154.9" r="1.1"/><circle cx="343.6" cy="157.1" r="1.1"/><circle cx="340.5" cy="152.8" r="1.1"/><circle cx="352.3" cy="155.1" r="1.1"/><circle cx="345.4" cy="149.8" r="1.1"/><circle cx="343.3" cy="155.7" r="1.1"/><circle cx="337.0" cy="156.0" r="1.1"/><circle cx="346.8" cy="150.3" r="1.1"/><circle cx="346.7" cy="154.5" r="1.1"/><circle cx="347.5" cy="153.3" r="1.1"/><circle cx="348.0" cy="157.3" r="1.1"/><circle cx="337.0" cy="150.3" r="1.1"/><circle cx="347.5" cy="159.6" r="1.1"/><circle cx="340.7" cy="154.4" r="1.1"/><circle cx="346.2" cy="153.0" r="1.1"/><circle cx="342.5" cy="152.9" r="1.1"/><circle cx="342.6" cy="155.8" r="1.1"/><circle cx="341.5" cy="153.6" r="1.1"/><circle cx="349.0" cy="149.9" r="1.1"/><circle cx="345.8" cy="157.3" r="1.1"/><circle cx="341.6" cy="152.0" r="1.1"/><circle cx="349.5" cy="152.1" r="1.1"/><circle cx="339.7" cy="154.2" r="1.1"/><circle cx="336.6" cy="195.6" r="1.1"/><circle cx="330.7" cy="197.1" r="1.1"/><circle cx="338.7" cy="197.8" r="1.1"/><circle cx="339.1" cy="196.1" r="1.1"/><circle cx="330.9" cy="199.1" r="1.1"/><circle cx="339.5" cy="197.9" r="1.1"/><circle cx="329.2" cy="195.8" r="1.1"/><circle cx="334.0" cy="196.2" r="1.1"/><circle cx="338.3" cy="200.3" r="1.1"/><circle cx="328.5" cy="196.8" r="1.1"/><circle cx="338.3" cy="199.1" r="1.1"/><circle cx="338.3" cy="197.2" r="1.1"/><circle cx="327.7" cy="196.8" r="1.1"/><circle cx="338.1" cy="196.7" r="1.1"/><circle cx="331.1" cy="197.6" r="1.1"/><circle cx="332.2" cy="197.6" r="1.1"/><circle cx="340.1" cy="196.0" r="1.1"/><circle cx="325.7" cy="201.0" r="1.1"/><circle cx="339.5" cy="201.2" r="1.1"/><circle cx="332.5" cy="201.0" r="1.1"/><circle cx="340.2" cy="196.4" r="1.1"/><circle cx="337.4" cy="200.3" r="1.1"/><circle cx="336.1" cy="198.3" r="1.1"/><circle cx="330.2" cy="197.2" r="1.1"/><circle cx="329.2" cy="195.4" r="1.1"/><circle cx="334.9" cy="196.8" r="1.1"/><circle cx="338.4" cy="195.3" r="1.1"/><circle cx="339.8" cy="199.4" r="1.1"/><circle cx="340.1" cy="200.7" r="1.1"/><circle cx="339.8" cy="198.7" r="1.1"/><circle cx="325.9" cy="199.7" r="1.1"/><circle cx="328.4" cy="196.9" r="1.1"/><circle cx="336.1" cy="198.3" r="1.1"/><circle cx="332.2" cy="200.9" r="1.1"/><circle cx="335.3" cy="197.2" r="1.1"/><circle cx="329.6" cy="200.5" r="1.1"/><circle cx="333.1" cy="200.0" r="1.1"/><circle cx="331.2" cy="196.2" r="1.1"/><circle cx="334.0" cy="200.2" r="1.1"/><circle cx="328.4" cy="200.0" r="1.1"/><circle cx="340.1" cy="200.1" r="1.1"/><circle cx="338.6" cy="195.0" r="1.1"/><circle cx="335.5" cy="200.5" r="1.1"/><circle cx="326.5" cy="196.7" r="1.1"/><circle cx="329.9" cy="198.3" r="1.1"/></g>
+    <g class="knots-i" fill="#2a74e0"><circle class="kn" style="--i:0" cx="345.04" cy="210.37" r="1.7"/><circle class="kn" style="--i:1" cx="333.86" cy="182.31" r="1.7"/><circle class="kn" style="--i:2" cx="333.27" cy="165.28" r="1.7"/><circle class="kn" style="--i:3" cx="343.83" cy="144.85" r="1.7"/><circle class="kn" style="--i:4" cx="343.93" cy="132.87" r="1.7"/><circle class="kn" style="--i:5" cx="333.37" cy="131.49" r="1.7"/><circle class="kn" style="--i:6" cx="332.88" cy="115.34" r="1.7"/><circle class="kn" style="--i:7" cx="343.93" cy="107.73" r="1.7"/><circle class="kn" style="--i:8" cx="332.96" cy="98.22" r="1.7"/><circle class="kn" style="--i:9" cx="343.33" cy="95.95" r="1.7"/></g>
+    <g class=""><rect x="276" y="240" width="130" height="100" rx="5" fill="#fff" stroke="#6a2a8c" stroke-width="1.6"/><rect x="276" y="240" width="130" height="42" rx="5" fill="#e6d8f0" stroke="#6a2a8c" stroke-width="1.6"/><text x="341.0" y="258.0" text-anchor="middle" class="hd">Fixed Sensor</text><text x="341.0" y="274.0" text-anchor="middle" class="hd">Model</text></g>
+    <image class="psf" href="static/images/method/psf.png" x="280" y="284" width="124" height="54" clip-path="url(#mt-psfclip)"/>
+    <path class="fl a-init" d="M408,158 H436" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/>
+  </g>
+
+  <!-- 3 · optimization -->
+  <g class="st-opt">
+    <g class=""><rect x="438" y="48" width="198" height="292" rx="5" fill="#fff" stroke="#8f1d3a" stroke-width="1.6"/><rect x="438" y="48" width="198" height="28" rx="5" fill="#f4c3cd" stroke="#8f1d3a" stroke-width="1.6"/><text x="537.0" y="67.0" text-anchor="middle" class="hd">Learned Scene</text></g>
+    <image class="scene" href="static/images/method/scene_bg.jpg" x="441" y="80" width="192" height="257"/>
+    <g class="knots-s" fill="#2a74e0"><circle class="kn" style="--i:0" cx="538.33" cy="305.32" r="2.8"/><circle class="kn" style="--i:1" cx="527.0" cy="282.36" r="2.8"/><circle class="kn" style="--i:2" cx="528.13" cy="248.42" r="2.8"/><circle class="kn" style="--i:3" cx="526.92" cy="214.89" r="2.8"/><circle class="kn" style="--i:4" cx="549.05" cy="199.2" r="2.8"/><circle class="kn" style="--i:5" cx="549.12" cy="174.29" r="2.8"/><circle class="kn" style="--i:6" cx="549.15" cy="149.4" r="2.8"/><circle class="kn" style="--i:7" cx="528.37" cy="146.89" r="2.8"/><circle class="kn" style="--i:8" cx="526.87" cy="113.15" r="2.8"/><circle class="kn" style="--i:9" cx="549.16" cy="98.66" r="2.8"/><circle class="kn" style="--i:10" cx="528.4" cy="79.75" r="2.8"/></g>
+    <g class="obj obj0"><rect x="542.17" y="149.5" width="16.0" height="38.67" fill="none" stroke="#1b2130" stroke-width="2.6"/><circle cx="544.0" cy="160.0" r="1.4" fill="#e3122f"/><circle cx="548.0" cy="168.0" r="1.4" fill="#e3122f"/><circle cx="550.0" cy="160.0" r="1.4" fill="#e3122f"/><circle cx="550.0" cy="164.0" r="1.4" fill="#e3122f"/><circle cx="550.0" cy="166.0" r="1.4" fill="#e3122f"/><circle cx="550.0" cy="170.0" r="1.4" fill="#e3122f"/><circle cx="552.0" cy="162.0" r="1.4" fill="#e3122f"/><circle cx="552.0" cy="164.0" r="1.4" fill="#e3122f"/><circle cx="554.0" cy="162.0" r="1.4" fill="#e3122f"/><circle cx="554.0" cy="164.0" r="1.4" fill="#e3122f"/><circle cx="556.0" cy="156.0" r="1.4" fill="#e3122f"/><circle cx="556.0" cy="158.0" r="1.4" fill="#e3122f"/><circle cx="556.0" cy="162.0" r="1.4" fill="#e3122f"/><line x1="550.17" y1="147.0" x2="550.17" y2="132.0" stroke="#16813a" stroke-width="2.6" marker-end="url(#mt-ahv)"/></g><g class="obj obj1"><rect x="519.5" y="227.17" width="15.670000000000002" height="38.67" fill="none" stroke="#1b2130" stroke-width="2.6"/><circle cx="522.0" cy="238.0" r="1.4" fill="#e3122f"/><circle cx="522.0" cy="242.0" r="1.4" fill="#e3122f"/><circle cx="522.0" cy="244.0" r="1.4" fill="#e3122f"/><circle cx="522.0" cy="246.0" r="1.4" fill="#e3122f"/><circle cx="524.0" cy="242.0" r="1.4" fill="#e3122f"/><circle cx="524.0" cy="244.0" r="1.4" fill="#e3122f"/><circle cx="524.0" cy="246.0" r="1.4" fill="#e3122f"/><circle cx="524.0" cy="248.0" r="1.4" fill="#e3122f"/><circle cx="526.0" cy="234.0" r="1.4" fill="#e3122f"/><circle cx="526.0" cy="244.0" r="1.4" fill="#e3122f"/><circle cx="526.0" cy="246.0" r="1.4" fill="#e3122f"/><circle cx="530.0" cy="242.0" r="1.4" fill="#e3122f"/><circle cx="532.0" cy="240.0" r="1.4" fill="#e3122f"/><circle cx="532.0" cy="242.0" r="1.4" fill="#e3122f"/><line x1="527.335" y1="224.67" x2="527.335" y2="209.67" stroke="#16813a" stroke-width="2.6" marker-end="url(#mt-ahv)"/></g>
+    <rect x="700" y="238" width="146" height="44" rx="5" fill="#f0aeb9" stroke="#e38d9c" stroke-width="1"/>
+    <text x="773" y="266" text-anchor="middle" class="hd" font-size="15">RAD Renderer</text>
+    <path class="fl a-opt" d="M636,252 H698" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/><path class="fl a-opt" d="M341,340 V356 H773 V284" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/><path class="fl a-opt" d="M773,238 V206" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/>
+    <g class=""><rect x="670" y="48" width="232" height="156" rx="5" fill="#fff" stroke="#8f1d3a" stroke-width="1.6"/><rect x="670" y="48" width="232" height="26" rx="5" fill="#f4c3cd" stroke="#8f1d3a" stroke-width="1.6"/><text x="786.0" y="66.0" text-anchor="middle" class="hd"></text><text x="786" y="66" text-anchor="middle" class="hd">Radar Predictions {<tspan font-style="italic">Ŷ</tspan><tspan dy="4" class="sb">t</tspan><tspan dy="-4">, </tspan><tspan font-style="italic">P</tspan><tspan dy="4" class="sb">t</tspan><tspan dy="-4" dx="1.5">}</tspan><tspan dy="-6" dx=".5" class="sb">T</tspan><tspan dy="10" dx="-5" class="sb">t=1</tspan></text></g>
+    <image href="static/images/method/pred.jpg" x="674" y="78" width="224" height="124"/>
+    <g class="loss"><rect x="452" y="8" width="184" height="32" rx="5" fill="#f5c2cb" stroke="#e39aa7"/>
+      <text x="544" y="29" text-anchor="middle" class="hd" font-size="14.5"><tspan font-style="italic">ℒ</tspan> = <tspan font-style="italic">ℒ</tspan><tspan dy="4" class="sb">rec</tspan><tspan dy="-4"> + </tspan><tspan font-style="italic">λ</tspan><tspan dy="4" class="sb">int</tspan><tspan dy="-4" font-style="italic"> ℒ</tspan><tspan dy="4" class="sb">int</tspan></text></g>
+    <path class="gr" d="M124,48 V24 H450" fill="none" stroke="#cc1f2f" stroke-width="1.7" stroke-dasharray="7 5" marker-end="url(#mt-ahr)"/><path class="gr" d="M638,24 H786 V46" fill="none" stroke="#cc1f2f" stroke-width="1.7" stroke-dasharray="7 5" marker-end="url(#mt-ahr)"/><path class="gr" d="M795,206 V236" fill="none" stroke="#cc1f2f" stroke-width="1.7" stroke-dasharray="7 5" marker-end="url(#mt-ahr)"/><path class="gr" d="M698,266 H638" fill="none" stroke="#cc1f2f" stroke-width="1.7" stroke-dasharray="7 5" marker-end="url(#mt-ahr)"/>
+  </g>
+
+  <!-- 4 · novel views -->
+  <g class="st-nv">
+    <path class="fl a-nv" d="M846,260 H864" fill="none" stroke="#7a7a7a" stroke-width="1.7" marker-end="url(#mt-ahg)"/>
+    <g class=""><rect x="866" y="210" width="237" height="148" rx="5" fill="#fff" stroke="#3c8a32" stroke-width="1.6"/><rect x="866" y="210" width="237" height="24" rx="5" fill="#d3ecca" stroke="#3c8a32" stroke-width="1.6"/><text x="984.5" y="227.0" text-anchor="middle" class="hd"></text><text x="984" y="227" text-anchor="middle" class="hd">Novel view <tspan font-style="italic">Ŷ</tspan><tspan dy="4" class="sb">t*</tspan><tspan dy="-4">, </tspan><tspan font-style="italic">P</tspan><tspan dy="4" class="sb">t*</tspan></text></g>
+    <image class="novel" href="static/images/method/novel.jpg" x="870" y="238" width="230" height="118" clip-path="url(#mt-wipe)"/>
+  </g>
+
+  <g class="legendbox"><rect x="930" y="42" width="173" height="58" rx="8" fill="#fff" stroke="#bdbdbd" stroke-width="1.4"/>
+    <text x="944" y="66" class="lgd" fill="#7a7a7a">Data flow</text><line x1="1046" y1="62" x2="1090" y2="62" stroke="#7a7a7a" stroke-width="2"/>
+    <text x="944" y="88" class="lgd" fill="#cc1f2f">Gradient flow</text><line x1="1046" y1="84" x2="1090" y2="84" stroke="#cc1f2f" stroke-width="2" stroke-dasharray="6 4"/></g>
+
+  
+  <g class="mcall" aria-hidden="true">
+    <path class="mlink" d="M537,240 L655,200" stroke="#1b2130" stroke-width="1.2" stroke-dasharray="3 3" fill="none"/>
+    <rect x="655" y="44" width="450" height="312" rx="8" fill="#fff" stroke="#9a9a9a" stroke-width="1.2" filter="url(#mt-sh)"/>
+    <g transform="translate(662 58) scale(.555)">
+      <text x="396" y="20" text-anchor="middle" class="mtitle">Motion model of object <tspan font-style="italic">j</tspan> at time <tspan font-style="italic">t</tspan> ∈ [<tspan font-style="italic">t</tspan><tspan dy="7" font-size="20" font-style="italic">k</tspan><tspan dy="-7">, </tspan><tspan font-style="italic">t</tspan><tspan dy="7" font-size="20" font-style="italic">k+1</tspan><tspan dy="-7">]</tspan></text>
+      <polyline points="78,180 168,210 265,188 485,207 618,172 711,186" fill="none" stroke="#8a8a8a" stroke-width="5"/>
+      <circle class="ring" cx="168" cy="210" r="15" fill="none" stroke="#111" stroke-width="4" stroke-dasharray="7 6"/><circle class="ring" cx="265" cy="188" r="15" fill="none" stroke="#111" stroke-width="4" stroke-dasharray="7 6"/><circle class="ring" cx="485" cy="207" r="15" fill="none" stroke="#111" stroke-width="4" stroke-dasharray="7 6"/><circle class="ring" cx="618" cy="172" r="15" fill="none" stroke="#111" stroke-width="4" stroke-dasharray="7 6"/><circle cx="78" cy="180" r="11" fill="#2a74e0"/><circle cx="168" cy="210" r="9" fill="#2a74e0"/><circle cx="265" cy="188" r="9" fill="#2a74e0"/><circle cx="485" cy="207" r="9" fill="#2a74e0"/><circle cx="618" cy="172" r="9" fill="#2a74e0"/><circle cx="711" cy="186" r="11" fill="#2a74e0"/><text x="128" y="170" class="mlab"><tspan font-style="italic">c</tspan><tspan dy="7" font-size="20" font-style="italic">j,k−1</tspan></text><text x="232" y="148" class="mlab"><tspan font-style="italic">c</tspan><tspan dy="7" font-size="20" font-style="italic">j,k</tspan></text><text x="462" y="168" class="mlab"><tspan font-style="italic">c</tspan><tspan dy="7" font-size="20" font-style="italic">j,k+1</tspan></text><text x="586" y="136" class="mlab"><tspan font-style="italic">c</tspan><tspan dy="7" font-size="20" font-style="italic">j,k+2</tspan></text>
+      <g id="mt-body">
+        <rect x="-66" y="-40" width="132" height="80" fill="none" stroke="#1b2130" stroke-width="3.5"/>
+        <circle cx="-44" cy="-24" r="6" fill="#e3122f"/><circle cx="-12" cy="-16" r="6" fill="#e3122f"/><circle cx="6" cy="14" r="6" fill="#e3122f"/><circle cx="-40" cy="18" r="6" fill="#e3122f"/><circle cx="30" cy="26" r="6" fill="#e3122f"/><circle cx="-22" cy="6" r="6" fill="#e3122f"/>
+        <line id="mt-mu" x1="0" y1="0" x2="-40" y2="18" stroke="#7a3fb6" stroke-width="3" marker-end="url(#mt-ahm)"/>
+      </g>
+      <line id="mt-vel" x1="0" y1="0" x2="0" y2="0" stroke="#2f9a3c" stroke-width="6" marker-end="url(#mt-ahv)"/>
+      <circle id="mt-p" r="10" fill="#8a8a8a"/>
+      
+      <rect x="12" y="308" width="768" height="210" rx="10" fill="#f0f1f3"/>
+      <circle cx="46" cy="348" r="7" fill="#e3122f"/><text x="72" y="356" class="mleg">Reflector <tspan font-style="italic">x</tspan><tspan dy="6" font-size="16" font-style="italic">i</tspan><tspan dy="-6">(t)</tspan></text>
+      <line x1="30" y1="394" x2="62" y2="394" stroke="#7a3fb6" stroke-width="3" marker-end="url(#mt-ahm)" marker-start="url(#mt-ahm)"/><text x="72" y="402" class="mleg">Offset from object origin <tspan font-style="italic">μ</tspan><tspan dy="6" font-size="16" font-style="italic">i</tspan></text>
+      <rect x="32" y="430" width="28" height="18" fill="none" stroke="#1b2130" stroke-width="3"/><text x="72" y="446" class="mleg">Bounding box (annotation)</text>
+      <circle cx="46" cy="484" r="8" fill="#2a74e0"/><text x="72" y="492" class="mleg">Track points (learned)</text>
+      <line x1="420" y1="348" x2="458" y2="348" stroke="#8a8a8a" stroke-width="4"/><circle cx="439" cy="348" r="6" fill="#8a8a8a"/><text x="472" y="356" class="mleg">Track <tspan font-style="italic">p</tspan><tspan dy="6" font-size="16" font-style="italic">j</tspan><tspan dy="-6">(t)</tspan></text>
+      <line x1="420" y1="394" x2="458" y2="394" stroke="#2f9a3c" stroke-width="5" marker-end="url(#mt-ahv)"/><text x="472" y="402" class="mleg">Velocity <tspan font-weight="700">v</tspan><tspan dy="6" font-size="16" font-style="italic">j</tspan><tspan dy="-6">(t) (LS slope)</tspan></text>
+      <circle cx="439" cy="440" r="12" fill="none" stroke="#111" stroke-width="4" stroke-dasharray="7 6"/><text x="472" y="448" class="mleg">Points contributing to <tspan font-weight="700">v</tspan><tspan dy="6" font-size="16" font-style="italic">j</tspan><tspan dy="-6">(t)</tspan></text>
+      <text x="420" y="492" class="mleg" font-weight="600">x<tspan dy="6" font-size="16">i</tspan><tspan dy="-6">(t) = p</tspan><tspan dy="6" font-size="16">j</tspan><tspan dy="-6">(t) + R</tspan><tspan dy="6" font-size="16">j</tspan><tspan dy="-6">(t) μ</tspan><tspan dy="6" font-size="16">i</tspan></text>
+    </g>
+  </g>
+</svg><!--/METHOD-SVG-->
+    <div class="tz-bar">
+      <div class="tz-stages" role="group" aria-label="Method stage">
+        <button type="button" class="tz-st mt-st" data-go="0" style="--c:#2f7f93">1 · Input</button>
+        <button type="button" class="tz-st mt-st" data-go="1" style="--c:#6a2a8c">2 · Scene initialization</button>
+        <button type="button" class="tz-st mt-st" data-go="2m" style="--c:#8f1d3a">3 · Optimization</button>
+        <button type="button" class="tz-st mt-st" data-go="3" style="--c:#3c8a32">4 · Novel views</button>
+      </div>
+      <button type="button" class="tz-replay" id="mt-replay" aria-label="Replay the method animation">↻ Replay</button>
+    </div>
+    <p class="tz-cap" id="mt-cap" aria-live="polite">Inputs initialize the scene, the differentiable RAD renderer fits it to the recordings, and the fitted scene renders new views. Solid grey arrows show data flow; dashed red arrows show gradient flow.</p>
   </figure>
   <ol class="steps">
     <li><b>Input</b>Recorded RAD tensors, sensor poses, object bounding boxes, and the radar's processing chain.</li>
@@ -212,7 +461,7 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
     <li><b>Optimization</b>The differentiable RAD renderer lets reflectors and tracks be fit jointly to the recorded measurements, with <span style="font-family:var(--f-mono)">𝓛 = 𝓛<sub>rec</sub> + λ<sub>int</sub>𝓛<sub>int</sub></span>.</li>
     <li><b>Novel views</b>The optimized scene renders RAD tensors at new times, sensor poses and configurations.</li>
   </ol>
-  <div class="split" style="margin-top:40px">
+  <div style="margin-top:36px">
     <div class="prose">
       <h3 style="font-size:1.2rem;margin-bottom:.6em">Motion model</h3>
       <p>Each moving object is a planar rigid track. Object <i>j</i> has one learned track point
@@ -223,9 +472,6 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
       projected onto the line of sight to give each reflector's Doppler. Doppler is therefore both a rendered
       output and supervision for the track.</p>
     </div>
-    <figure class="figure lightfig" style="margin:0">
-      <img src="static/images/motion_static.png" alt="Motion model of object j between track points c_k and c_k+1: reflectors inside the annotation box move with the track, and the velocity is the least-squares slope over four neighbouring track points." loading="lazy">
-    </figure>
   </div>
 </section>
 
@@ -367,6 +613,65 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
       t.setAttribute("aria-selected","true"); showTbl(t.dataset.tbl); };
   });
   showTbl("onpath");
+
+  // ----- animated teaser: stage machine; the markup without data-stage is the full paper figure
+  (function(){
+    var fig=document.getElementById("teaser"); if(!fig) return;
+    var cap=document.getElementById("tz-cap"), btns=fig.querySelectorAll(".tz-st");
+    var CAPS=["The measured radar frame: range–azimuth with its Doppler strip, and white boxes on the annotated vehicles.",
+      "Novel viewpoint: the same reconstructed scene rendered for a sensor shifted one lane to the left.",
+      "Scene editing: a vehicle is moved to a new position, and its returns move with it in range, azimuth and Doppler.",
+      "Sensor configuration: the scene is rendered for a finer radar, since the sensor's PSF is kept out of the scene.",
+      "Higher RAD PSNR and detection hit rate than both baselines on RADIal, on-path (filled) and after a 2 m lateral-shift round trip (rings)."];
+    var DUR=[1800,3200,3200,3200], timer=null, played=false;
+    var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function set(k){ fig.setAttribute("data-stage",k); cap.textContent=CAPS[k];
+      btns.forEach(function(b){ b.setAttribute("aria-pressed", String(+b.dataset.go===k)); }); }
+    function run(k){ clearTimeout(timer); set(k); if(k<4) timer=setTimeout(function(){ run(k+1); }, DUR[k]); }
+    btns.forEach(function(b){ b.onclick=function(){ clearTimeout(timer); set(+b.dataset.go); }; });
+    document.getElementById("tz-replay").onclick=function(){ played=true; run(0); };
+    if(reduce || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function(es,ob){ es.forEach(function(e){ if(e.isIntersecting && !played){ played=true; ob.disconnect(); run(0); } }); },{threshold:.45}).observe(fig);
+  })();
+
+  // ----- animated method: 0 input, 1 initialization, 2m optimization (motion model), 2 optimization (render + gradients), 3 novel views
+  (function(){
+    var fig=document.getElementById("method-fig"); if(!fig) return;
+    var cap=document.getElementById("mt-cap"), btns=fig.querySelectorAll(".mt-st");
+    var ORDER=["0","1","2m","2","3"], DUR={"0":2200,"1":4600,"2m":6400,"2":4200};
+    var CAPS={"0":"1 · Input. Recorded RAD tensors with sensor poses, the object bounding boxes, and the radar's processing chain.",
+      "1":"2 · Scene initialization. Point reflectors are seeded from the measurements; the boxes separate object reflectors (red) from the background and start each object's track (blue); the processing chain fixes the sensor PSF.",
+      "2m":"3 · Optimization: motion. Each object moves rigidly along its learned track, x<sub>i</sub>(t) = p<sub>j</sub>(t) + R<sub>j</sub>(t) μ<sub>i</sub>. Its velocity is the least-squares slope over four neighbouring track points, which gives each reflector its Doppler.",
+      "2":"3 · Optimization: rendering. The RAD renderer predicts every recorded frame; the loss compares predictions with the measurements, and gradients flow back to the reflectors and tracks.",
+      "3":"4 · Novel views. The optimized scene renders RAD tensors at new times and sensor poses."};
+    var timer=null, played=false, raf=null;
+    var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // motion-model callout geometry (slide 3 units)
+    var K=[[78,180],[168,210],[265,188],[485,207],[618,172],[711,186]];
+    function head(i){ return Math.atan2(K[i+1][1]-K[i-1][1], K[i+1][0]-K[i-1][0]); }
+    var t=[-1,0,1,2], tb=.5, den=0, vx=0, vy=0, mx=0, my=0;
+    for(var i=0;i<4;i++){ mx+=K[i+1][0]/4; my+=K[i+1][1]/4; }
+    for(i=0;i<4;i++){ den+=(t[i]-tb)*(t[i]-tb); vx+=(t[i]-tb)*(K[i+1][0]-mx); vy+=(t[i]-tb)*(K[i+1][1]-my); }
+    vx/=den; vy/=den;
+    var body=document.getElementById("mt-body"), vel=document.getElementById("mt-vel"), pc=document.getElementById("mt-p");
+    function pose(s){
+      var a=K[2], b=K[3], x=a[0]+(b[0]-a[0])*s, y=a[1]+(b[1]-a[1])*s, th=head(2)+(head(3)-head(2))*s;
+      body.setAttribute("transform","translate("+x.toFixed(1)+" "+y.toFixed(1)+") rotate("+(th*180/Math.PI).toFixed(2)+")");
+      pc.setAttribute("cx",x.toFixed(1)); pc.setAttribute("cy",y.toFixed(1));
+      vel.setAttribute("x1",x.toFixed(1)); vel.setAttribute("y1",y.toFixed(1));
+      vel.setAttribute("x2",(x+vx*.62).toFixed(1)); vel.setAttribute("y2",(y+vy*.62).toFixed(1));
+    }
+    pose(.45);
+    function loop(t0){ return function f(now){ var u=((now-t0)/2600)%1.25; pose(Math.min(u,1)); raf=requestAnimationFrame(f); }; }
+    function set(k){ fig.setAttribute("data-stage",k); cap.innerHTML=CAPS[k];
+      cancelAnimationFrame(raf); if(k==="2m" && !reduce) raf=requestAnimationFrame(loop(performance.now()));
+      btns.forEach(function(b){ var g=b.dataset.go; b.setAttribute("aria-pressed", String(g===k || (g==="2m" && k==="2"))); }); }
+    function run(i){ clearTimeout(timer); set(ORDER[i]); if(i<ORDER.length-1) timer=setTimeout(function(){ run(i+1); }, DUR[ORDER[i]]); }
+    btns.forEach(function(b){ b.onclick=function(){ var i=ORDER.indexOf(b.dataset.go); if(b.dataset.go==="2m") run(i); else { clearTimeout(timer); set(b.dataset.go); } }; });
+    document.getElementById("mt-replay").onclick=function(){ played=true; run(0); };
+    if(reduce || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function(es,ob){ es.forEach(function(e){ if(e.isIntersecting && !played){ played=true; ob.disconnect(); run(0); } }); },{threshold:.45}).observe(fig);
+  })();
 
   // ----- copy BibTeX
   var cb=document.getElementById("copyBib");
