@@ -142,7 +142,7 @@ def svg():
   <g class="st-init">
     {arrow("M242,140 H274", "fl a-in")}{arrow("M242,224 H274", "fl a-in")}{arrow("M242,304 H274", "fl a-in")}
     {box(276, 48, 132, 180, PURP, PURP_F, "Scene\nInitialization", hh=42)}</g>
-    <image class="cloud" href="{IMG}init_bg.jpg" x="279" y="94" width="126" height="132" clip-path="url(#mt-sweep)"/>
+    <image class="cloud" href="{IMG}init_bg.jpg" x="279" y="97" width="126" height="129" clip-path="url(#mt-sweep)"/>
     <g class="seeds" fill="#e3122f">{seeds()}</g>
     <g class="knots-i" fill="#2a74e0">{blues("init")}</g>
     {box(276, 240, 130, 100, PURP, PURP_F, "Fixed Sensor\nModel", hh=42)}</g>
@@ -160,7 +160,7 @@ def svg():
     <text x="773" y="266" text-anchor="middle" class="hd" font-size="15">RAD Renderer</text>
     {arrow("M636,252 H698", "fl a-opt")}{arrow("M341,340 V356 H773 V284", "fl a-opt")}{arrow("M773,238 V206", "fl a-opt")}
     {box(670, 48, 232, 156, CRIM, CRIM_F, "")}<text x="786" y="66" text-anchor="middle" class="hd">Radar Predictions {{<tspan font-style="italic">Ŷ</tspan><tspan dy="4" class="sb">t</tspan><tspan dy="-4">, </tspan><tspan font-style="italic">P</tspan><tspan dy="4" class="sb">t</tspan><tspan dy="-4" dx="1.5">}}</tspan><tspan dy="-6" dx=".5" class="sb">T</tspan><tspan dy="10" dx="-5" class="sb">t=1</tspan></text></g>
-    <image href="{IMG}pred.jpg" x="674" y="78" width="224" height="124"/>
+    <image href="{IMG}pred.jpg" x="674" y="80" width="224" height="122"/>
     <g class="loss"><rect x="452" y="8" width="184" height="32" rx="5" fill="#f5c2cb" stroke="#e39aa7"/>
       <text x="544" y="29" text-anchor="middle" class="hd" font-size="14.5"><tspan font-style="italic">ℒ</tspan> = <tspan font-style="italic">ℒ</tspan><tspan dy="4" class="sb">rec</tspan><tspan dy="-4"> + </tspan><tspan font-style="italic">λ</tspan><tspan dy="4" class="sb">int</tspan><tspan dy="-4" font-style="italic"> ℒ</tspan><tspan dy="4" class="sb">int</tspan></text></g>
     {arrow("M124,48 V24 H450", "gr", red=True)}{arrow("M638,24 H786 V46", "gr", red=True)}{arrow("M795,206 V236", "gr", red=True)}{arrow("M698,266 H638", "gr", red=True)}
@@ -170,7 +170,7 @@ def svg():
   <g class="st-nv">
     {arrow("M846,260 H864", "fl a-nv")}
     {box(866, 210, 237, 148, GRN, GRN_F, "", hh=24)}<text x="984" y="227" text-anchor="middle" class="hd">Novel view <tspan font-style="italic">Ŷ</tspan><tspan dy="4" class="sb">t*</tspan><tspan dy="-4">, </tspan><tspan font-style="italic">P</tspan><tspan dy="4" class="sb">t*</tspan></text></g>
-    <image class="novel" href="{IMG}novel.jpg" x="870" y="238" width="230" height="118" clip-path="url(#mt-wipe)"/>
+    <image class="novel" href="{IMG}novel.jpg" x="870" y="238" width="225" height="118" clip-path="url(#mt-wipe)"/>
   </g>
 
   <g class="legendbox"><rect x="930" y="42" width="173" height="58" rx="8" fill="#fff" stroke="#bdbdbd" stroke-width="1.4"/>
