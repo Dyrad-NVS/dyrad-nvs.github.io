@@ -96,6 +96,16 @@ figcaption b{color:var(--ink)}
 .steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.93rem}
 .steps li::before{content:counter(s);display:block;font:600 .75rem var(--f-mono);color:var(--dyrad);margin-bottom:4px}
 .steps b{display:block;font-family:var(--f-display);font-stretch:112%;font-size:1rem;margin-bottom:2px}
+/* each step takes its stage colour from the method figure: input teal, initialization purple, optimization crimson, novel views green */
+:root{--s1:#2f7f93;--s1f:#eaf5f8;--s2:#6a2a8c;--s2f:#f3edf8;--s3:#8f1d3a;--s3f:#fbeef1;--s4:#3c8a32;--s4f:#eef7eb}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--s1:#6fc0d4;--s1f:#15262c;--s2:#b98bd6;--s2f:#221a2b;--s3:#e47a95;--s3f:#2b171d;--s4:#86c97c;--s4f:#18251a}}
+:root[data-theme="dark"]{--s1:#6fc0d4;--s1f:#15262c;--s2:#b98bd6;--s2f:#221a2b;--s3:#e47a95;--s3f:#2b171d;--s4:#86c97c;--s4f:#18251a}
+.steps li:nth-child(1){--sc:var(--s1);--sf:var(--s1f)}
+.steps li:nth-child(2){--sc:var(--s2);--sf:var(--s2f)}
+.steps li:nth-child(3){--sc:var(--s3);--sf:var(--s3f)}
+.steps li:nth-child(4){--sc:var(--s4);--sf:var(--s4f)}
+.steps li{background:var(--sf);border-color:var(--sc)}
+.steps li::before,.steps li b{color:var(--sc)}
 
 /* results viewer */
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
@@ -462,17 +472,6 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
     <li><b>Optimization</b>The differentiable RAD renderer lets reflectors and tracks be fit jointly to the recorded measurements, with <span style="font-family:var(--f-mono)">𝓛 = 𝓛<sub>rec</sub> + λ<sub>int</sub>𝓛<sub>int</sub></span>.</li>
     <li><b>Novel views</b>The optimized scene renders RAD tensors at new times, sensor poses and configurations.</li>
   </ol>
-  <div style="margin-top:36px">
-    <div class="prose">
-      <h3 style="font-size:1.2rem;margin-bottom:.6em">Motion model</h3>
-      <p>Each moving object is a planar rigid track. Object <i>j</i> has one learned track point
-      <i>c</i><sub>j,k</sub> per training timestamp, and its reflectors keep fixed coordinates
-      <i>μ</i><sub>i</sub> in the object's own frame.</p>
-      <div class="eq">x<sub>i</sub>(t) = p<sub>j</sub>(t) + R<sub>j</sub>(t) μ<sub>i</sub>&nbsp;&nbsp;<i>for reflector i on object j</i></div>
-      <p style="margin-top:1em">The velocity comes from a least-squares slope over four neighbouring track points, and is
-      projected onto the line of sight to give each reflector's Doppler. Doppler is therefore both a rendered
-      output and supervision for the track.</p>
-    </div>
   </div>
 </section>
 
