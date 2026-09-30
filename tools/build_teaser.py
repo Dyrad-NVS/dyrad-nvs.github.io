@@ -10,10 +10,14 @@ import re
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 IMG = "static/images/teaser/"
 
+# frame x of each panel on slide 2; the left column sits further left than on the slide so the
+# shifted ego car's ghost clears it, and the panel arrows move with their panel
+SLIDE_X = {"gt": 30, "edit": 357, "shift": 30, "hires": 357}
+
 PANELS = [  # key, title, colour token, frame x, frame y
-    ("gt", "Ground Truth", "--t-gt", 30, 100),
+    ("gt", "Ground Truth", "--t-gt", 14, 100),
     ("edit", "Repositioned Object", "--t-edit", 357, 100),
-    ("shift", "Lateral Sensor Shift", "--t-nv", 30, 262),
+    ("shift", "Lateral Sensor Shift", "--t-nv", 14, 262),
     ("hires", "High Res Sensor", "--t-cfg", 357, 262),
 ]
 
@@ -27,12 +31,12 @@ PANEL_ARROWS = {
 }
 
 
-def panel_arrows(key):
+def panel_arrows(key, dx=0):
     if key not in PANEL_ARROWS:
         return ""
     col, arrs = PANEL_ARROWS[key]
     lines = "".join(
-        f'<line x1="{ox / EMU:.1f}" y1="{(oy + cy) / EMU:.1f}" x2="{(ox + cx) / EMU:.1f}" y2="{oy / EMU:.1f}" '
+        f'<line x1="{ox / EMU + dx:.1f}" y1="{(oy + cy) / EMU:.1f}" x2="{(ox + cx) / EMU + dx:.1f}" y2="{oy / EMU:.1f}" '
         f'stroke="{col}" stroke-width="1.56" marker-end="url(#tz-pa-{key})"/>' for ox, oy, cx, cy in arrs)
     return (f'\n    <marker id="tz-pa-{key}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" '
             f'orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="{col}"/></marker>'
@@ -52,7 +56,7 @@ def panel(key, title, tok, x, y):
     <image href="{IMG}d_{key}.jpg" x="{ix + iw + gap:.1f}" y="{iy:.1f}" width="{dw:.1f}" height="{ih:.1f}" preserveAspectRatio="none"/>
     <text class="ax" transform="translate({x + 12} {iy + ih / 2:.1f}) rotate(-90)" text-anchor="middle">Range [m]</text>
     <text class="ax" x="{ix + iw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Azimuth°</text>
-    <text class="ax" x="{ix + iw + gap + dw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Doppler</text>{panel_arrows(key)}
+    <text class="ax" x="{ix + iw + gap + dw / 2:.1f}" y="{iy + ih + 11:.1f}" text-anchor="middle">Doppler</text>{panel_arrows(key, x - SLIDE_X[key])}
   </g>'''
 
 
@@ -119,7 +123,7 @@ def plot():
 def svg():
     arrow = lambda i, c: (f'<marker id="tz-ah-{i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" '
                           f'orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="{c}"/></marker>')
-    return f'''<svg class="tz-svg" viewBox="20 92 900 336" role="img" aria-labelledby="tz-title">
+    return f'''<svg class="tz-svg" viewBox="4 92 916 336" role="img" aria-labelledby="tz-title">
   <title id="tz-title">DyRAD re-simulation: from a measured radar frame, DyRAD renders a laterally shifted sensor, a repositioned object and a higher-resolution sensor, and scores higher RAD PSNR and detection hit rate than RadarSplat and RadarFields.</title>
   <defs></defs>
   {road()}
