@@ -55,6 +55,8 @@ h1,h2,h3{font-family:var(--f-display);font-stretch:112%;text-wrap:balance;margin
   font-size:clamp(1.15rem,2.6vw,1.6rem);margin:14px auto 0;max-width:760px;line-height:1.25}
 .authors{margin-top:22px;color:var(--dim);font-size:1rem}
 .authors b{color:var(--ink);font-weight:600}
+.authors a{color:inherit;text-decoration:none}
+.authors a:hover b{text-decoration:underline;text-underline-offset:3px}
 .venue{display:inline-block;margin-top:10px;font:500 .78rem var(--f-mono);letter-spacing:.06em;
   text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
 .links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
@@ -197,6 +199,8 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
   font:500 .84rem var(--f-body);padding:5px 12px;cursor:pointer}
 .tz-st::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:7px;vertical-align:1px}
 .tz-st[aria-pressed="true"]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);font-weight:600}
+.tz-ctl{display:flex;gap:6px}
+.tz.is-paused *,.mt.is-paused *{animation-play-state:paused!important}
 .tz-cap{margin:10px 2px 0;color:#555;font-size:.93rem;min-height:3em}
 @media (prefers-reduced-motion:reduce){.tz-svg *{transition:none!important}}
 /* ----- animated method + motion model */
@@ -246,10 +250,10 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
 <header class="hero wrap">
   <h1><span class="d">DyRAD</span></h1>
   <p class="sub">Radar Novel View Synthesis for Dynamic Driving Scenes</p>
-  <div class="authors"><b>Merav Keidar</b><sup>1</sup> · <b>Tomer Borreda</b><sup>1</sup> · <b>Rajalakshmi Nandakumar</b><sup>2</sup> · <b>Or Litany</b><sup>1,3</sup><br><sup>1</sup>Technion · <sup>2</sup>Cornell Tech · <sup>3</sup>NVIDIA</div>
+  <div class="authors"><a href="https://meravkeidar.github.io/"><b>Merav Keidar</b></a><sup>1</sup> · <a href="https://tomerborreda.github.io/"><b>Tomer Borreda</b></a><sup>1</sup> · <a href="https://tech.cornell.edu/people/rajalakshmi-nandakumar/"><b>Rajalakshmi Nandakumar</b></a><sup>2</sup> · <a href="https://orlitany.github.io/"><b>Or Litany</b></a><sup>1,3</sup><br><sup>1</sup>Technion · <sup>2</sup>Cornell Tech · <sup>3</sup>NVIDIA</div>
   <span class="venue">Preprint · 2026</span>
   <nav class="links" aria-label="Paper links">
-    <a class="btn" aria-disabled="true"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 3v5h5"/></svg>Paper <small>soon</small></a>
+    <a class="btn" href="static/DyRAD.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 3v5h5"/></svg>Paper</a>
     <a class="btn" aria-disabled="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>arXiv <small>soon</small></a>
     <a class="btn" aria-disabled="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1 1.6 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>Code <small>soon</small></a>
     <a class="btn" href="#bibtex"><svg viewBox="0 0 24 24"><path d="M5 3h14v18l-7-4-7 4z"/></svg>BibTeX</a>
@@ -332,7 +336,10 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
         <button type="button" class="tz-st" data-go="3" style="--c:var(--t-cfg)">Sensor configuration</button>
         <button type="button" class="tz-st" data-go="4" style="--c:#b8173f">Results</button>
       </div>
-      <button type="button" class="tz-replay" id="tz-replay" aria-label="Replay the teaser animation">↻ Replay</button>
+      <div class="tz-ctl">
+        <button type="button" class="tz-replay" id="tz-stop" aria-label="Stop the teaser animation">■ Stop</button>
+        <button type="button" class="tz-replay" id="tz-replay" aria-label="Replay the teaser animation">↻ Replay</button>
+      </div>
     </div>
     <p class="tz-cap" id="tz-cap" aria-live="polite">From recorded radar, poses and object boxes, DyRAD reconstructs the scene and renders it from new viewpoints, with edited objects and for other sensors.</p>
   </figure>
@@ -460,7 +467,10 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
         <button type="button" class="tz-st mt-st" data-go="2m" style="--c:#8f1d3a">3 · Optimization</button>
         <button type="button" class="tz-st mt-st" data-go="3" style="--c:#3c8a32">4 · Novel views</button>
       </div>
-      <button type="button" class="tz-replay" id="mt-replay" aria-label="Replay the method animation">↻ Replay</button>
+      <div class="tz-ctl">
+        <button type="button" class="tz-replay" id="mt-stop" aria-label="Stop the method animation">■ Stop</button>
+        <button type="button" class="tz-replay" id="mt-replay" aria-label="Replay the method animation">↻ Replay</button>
+      </div>
     </div>
     <p class="tz-cap" id="mt-cap" aria-live="polite">Inputs initialize the scene, the differentiable RAD renderer fits it to the recordings, and the fitted scene renders new views. Solid grey arrows show data flow; dashed red arrows show gradient flow.</p>
   </figure>
@@ -635,13 +645,22 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
       "Scene editing: a vehicle is moved to a new position, and its returns move with it in range, azimuth and Doppler.",
       "Sensor configuration: the scene is rendered for a finer radar, since the sensor's PSF is kept out of the scene.",
       "Higher RAD PSNR and detection hit rate than both baselines on RADIal, on-path (filled) and after a 2 m lateral-shift round trip (rings)."];
-    var DUR=[1800,3200,3200,3200], timer=null, played=false;
-    var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    function set(k){ fig.setAttribute("data-stage",k); cap.textContent=CAPS[k];
+    var DUR=[1800,3200,3200,3200], timer=null, played=false, cur=-1, due=0, left=0;
+    var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches, sb=document.getElementById("tz-stop");
+    // stopped: no auto-advance; the Stop button becomes Play and resumes where it left off
+    function status(stop){ fig.classList.toggle("is-paused",stop); sb.textContent=stop?"▶ Play":"■ Stop";
+      sb.setAttribute("aria-label",(stop?"Play":"Stop")+" the teaser animation"); }
+    function set(k){ cur=k; fig.setAttribute("data-stage",k); cap.textContent=CAPS[k];
       btns.forEach(function(b){ b.setAttribute("aria-pressed", String(+b.dataset.go===k)); }); }
-    function run(k){ clearTimeout(timer); set(k); if(k<4) timer=setTimeout(function(){ run(k+1); }, DUR[k]); }
-    btns.forEach(function(b){ b.onclick=function(){ played=true; clearTimeout(timer); set(+b.dataset.go); }; });
+    function arm(ms){ due=performance.now()+ms; timer=setTimeout(function(){ run(cur+1); }, ms); }
+    function run(k){ clearTimeout(timer); set(k); status(k>=4); if(k<4) arm(DUR[k]); }
+    btns.forEach(function(b){ b.onclick=function(){ played=true; clearTimeout(timer); set(+b.dataset.go); left=0; status(true); }; });
     document.getElementById("tz-replay").onclick=function(){ played=true; run(0); };
+    sb.onclick=function(){ played=true;
+      if(!fig.classList.contains("is-paused")){ clearTimeout(timer); left=Math.max(0,due-performance.now()); status(true); }
+      else if(cur<0 || cur>=4) run(0);
+      else { status(false); arm(left||DUR[cur]); } };
+    status(reduce || !("IntersectionObserver" in window));
     if(reduce || !("IntersectionObserver" in window)) return;
     new IntersectionObserver(function(es,ob){ es.forEach(function(e){ if(e.isIntersecting && !played){ played=true; ob.disconnect(); run(0); } }); },{threshold:.45}).observe(fig);
   })();
@@ -692,13 +711,25 @@ footer{padding-block:32px 48px;color:var(--dim);font-size:.85rem;text-align:cent
       vel.setAttribute("x2",(x+v[0]*.8).toFixed(1)); vel.setAttribute("y2",(y+v[1]*.8).toFixed(1));
     }
     pose(2.45);
-    function loop(t0){ lastSeg=-1; return function f(now){ var u=Math.max(0,(now-t0)/SEG), span=N-1+0.8; u=u%span; pose(Math.min(u,N-1)); raf=requestAnimationFrame(f); }; }
-    function set(k){ fig.setAttribute("data-stage",k); cap.innerHTML=CAPS[k];
-      cancelAnimationFrame(raf); if(k==="2m" && !reduce) raf=requestAnimationFrame(loop(performance.now()));
+    var t0=0, stoppedAt=0, cur=-1, seq=false, due=0, left=0, sb=document.getElementById("mt-stop");
+    function tick(now){ var u=Math.max(0,(now-t0)/SEG), span=N-1+0.8; u=u%span; pose(Math.min(u,N-1)); raf=requestAnimationFrame(tick); }
+    function set(k){ cur=ORDER.indexOf(k); fig.setAttribute("data-stage",k); cap.innerHTML=CAPS[k];
+      cancelAnimationFrame(raf); if(k==="2m" && !reduce){ lastSeg=-1; t0=performance.now(); raf=requestAnimationFrame(tick); }
       btns.forEach(function(b){ var g=b.dataset.go; b.setAttribute("aria-pressed", String(g===k || (g==="2m" && k==="2"))); }); }
-    function run(i){ clearTimeout(timer); set(ORDER[i]); if(i<ORDER.length-1) timer=setTimeout(function(){ run(i+1); }, DUR[ORDER[i]]); }
-    btns.forEach(function(b){ b.onclick=function(){ played=true; var i=ORDER.indexOf(b.dataset.go); if(b.dataset.go==="2m") run(i); else { clearTimeout(timer); set(b.dataset.go); } }; });
+    // stopped: no auto-advance, CSS loops and the motion callout frozen; Play resumes where it left off
+    function status(stop){ fig.classList.toggle("is-paused",stop); sb.textContent=stop?"▶ Play":"■ Stop";
+      sb.setAttribute("aria-label",(stop?"Play":"Stop")+" the method animation"); }
+    function arm(ms){ due=performance.now()+ms; timer=setTimeout(function(){ run(cur+1); }, ms); }
+    function run(i){ clearTimeout(timer); status(false); set(ORDER[i]); seq=i<ORDER.length-1; if(seq) arm(DUR[ORDER[i]]); }
+    btns.forEach(function(b){ b.onclick=function(){ played=true; var i=ORDER.indexOf(b.dataset.go); if(b.dataset.go==="2m") run(i); else { clearTimeout(timer); seq=false; status(false); set(b.dataset.go); } }; });
     document.getElementById("mt-replay").onclick=function(){ played=true; run(0); };
+    sb.onclick=function(){ played=true; var now=performance.now();
+      if(cur<0){ run(0); return; }
+      if(!fig.classList.contains("is-paused")){ clearTimeout(timer); left=Math.max(0,due-now); cancelAnimationFrame(raf); stoppedAt=now; status(true); return; }
+      status(false);
+      if(ORDER[cur]==="2m" && !reduce){ t0+=now-stoppedAt; raf=requestAnimationFrame(tick); }
+      if(seq) arm(left); };
+    status(reduce || !("IntersectionObserver" in window));
     if(reduce || !("IntersectionObserver" in window)) return;
     new IntersectionObserver(function(es,ob){ es.forEach(function(e){ if(e.isIntersecting && !played){ played=true; ob.disconnect(); run(0); } }); },{threshold:.45}).observe(fig);
   })();
