@@ -15,9 +15,9 @@ IMG = "static/images/teaser/"
 SLIDE_X = {"gt": 30, "edit": 357, "shift": 30, "hires": 357}
 
 PANELS = [  # key, title, colour token, frame x, frame y
-    ("gt", "Ground Truth", "--t-gt", 12, 100),
+    ("gt", "Ground Truth", "--t-gt", 15, 100),
     ("edit", "Repositioned Object", "--t-edit", 357, 100),
-    ("shift", "Lateral Sensor Shift", "--t-nv", 12, 262),
+    ("shift", "Lateral Sensor Shift", "--t-nv", 15, 262),
     ("hires", "High Res Sensor", "--t-cfg", 357, 262),
 ]
 
@@ -123,7 +123,7 @@ def plot():
 def svg():
     arrow = lambda i, c: (f'<marker id="tz-ah-{i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" '
                           f'orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="{c}"/></marker>')
-    return f'''<svg class="tz-svg" viewBox="2 92 918 336" role="img" aria-labelledby="tz-title">
+    return f'''<svg class="tz-svg" viewBox="5 92 915 336" role="img" aria-labelledby="tz-title">
   <title id="tz-title">DyRAD re-simulation: from a measured radar frame, DyRAD renders a laterally shifted sensor, a repositioned object and a higher-resolution sensor, and scores higher RAD PSNR and detection hit rate than RadarSplat and RadarFields.</title>
   <defs></defs>
   {road()}
